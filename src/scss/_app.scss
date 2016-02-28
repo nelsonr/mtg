@@ -1,0 +1,273 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  background-color: #252525;
+  background-image: url('../images/bg.png');
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+  font-family: 'Beleren';
+}
+
+main, #app {
+  height: 100%;
+}
+
+@mixin no-text-selection() {
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@mixin button-3d($color) {
+  background-color: $color;
+  text-shadow: 0 -1px desaturate(darken($color, 20%), 50%);
+  box-shadow: 0 -1px saturate(lighten($color, 24%), 10%), 
+              0 2px 4px rgba(0, 0, 0, 0.5),
+              0 2px desaturate(darken($color, 23%), 50%);
+  
+  &:active {
+    box-shadow: none;
+    position: relative;
+    top: 2px;
+  }
+}
+
+@mixin player-color($color-class, $color) {
+  .player.#{$color-class} {
+    background-image: url('../images/mana-#{$color-class}.png');
+    background-position: center 25%;
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    .name-container {
+      background-color: $color;
+    }
+
+    .life-container {
+      color: $color;
+    }
+
+    .options-container {
+      .option {
+        button {
+          @include button-3d($color);
+          @include no-text-selection();
+        }
+      }
+    }
+  }
+}
+
+.board {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-options-container {
+  padding: 0.5em 1em;
+  display: flex;
+  justify-content: space-around;
+  position: relative;
+  top: 1em;
+
+  @include no-text-selection();
+
+  .game-option {
+    button {
+      color: #FFF;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 0;
+      padding: 0.4em 0.9em;
+      outline: 0;
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+
+      @include button-3d($game-option);
+
+      &:disabled {
+        box-shadow: none;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.overflow-container {
+  flex: 1;
+  overflow-x: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.players-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-left: 1em;
+  padding-right: 1em;
+
+  &.players-2 {
+    justify-content: space-between;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+
+  &.players-5 {
+    float: left;
+    max-width: initial;
+  }
+
+  .player {
+    color: #FFF;
+    min-width: 288px;
+    width: 308px;
+    height: 479px;
+    background-color: $gray-box;
+    border: 1px solid $gray-border;
+    border-radius: 8px;
+    margin-top: 17px;
+    display: flex;
+    flex-direction: column;
+    margin-right: 1em;
+    transition: transform 300ms;
+
+    &.deceased {
+      transform: scale(0.9);
+      filter: #{"grayscale(100%)"} blur(1px);
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    .name-container {
+      width: 285px;
+      height: 77px;
+      border-radius: 8px;
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+      line-height: 69px;
+      margin: auto;
+      margin-top: -17px;
+
+      .name {
+        height: 100%;
+        font-size: 37px;
+        line-height: 77px;
+        text-align: center;
+        cursor: pointer;
+        @include no-text-selection();
+      }
+
+      .form {
+        height: 100%;
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        box-sizing: border-box;
+
+        input[type="text"] {
+          color: $darker-gray-text;
+          padding: 0.3em;
+          font-size: 1.1em;
+          height: 40px;
+          max-width: 190px;
+          box-sizing: border-box;
+          border: 0;
+          outline: 0;
+          border-top-left-radius: 3px;
+          border-bottom-left-radius: 3px;
+        }
+
+        button.submit {
+          display: inline-block;
+          position: relative;
+          height: 40px;
+          max-width: 65px;
+          line-height: 1;
+          box-sizing: border-box;
+          background: rgba(0,0,0,0.1);
+          border: 0;
+          box-shadow: 1px 1px rgba(0,0,0,0.3);
+          flex: 1;
+          outline: 0;
+          border-top-right-radius: 3px;
+          border-bottom-right-radius: 3px;
+
+          &:active {
+            box-shadow: none;
+            top: 1px;
+          }
+        }
+      }
+    }
+
+    .life-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: default;
+      
+      @include no-text-selection();
+
+      .life {
+        font-size: 147px;
+        text-align: center;
+      } 
+    }
+
+    .options-container {
+      .options-row {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 17px;
+
+        &:last-child {
+          margin-bottom: 15px;
+        }
+
+        .option {
+          margin-right: 15px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
+      .option {
+        button {
+          border: none;
+          width: 132px;
+          height: 62px;
+          border-radius: 5px;
+          font-size: 37px;
+          outline: none;
+        }
+      }
+    }
+  }
+
+  @include player-color('red', $red);
+  @include player-color('green', $green);
+  @include player-color('blue', $blue);
+  @include player-color('black', $black);
+  @include player-color('white', $white);
+
+  .player.blue, .player.white {
+    color: $gray-text;
+  }
+}
