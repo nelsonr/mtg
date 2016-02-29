@@ -172,6 +172,14 @@ main, #app { height: 100%; }
 
 .players-container .player .life-container .life { font-size: 147px; text-align: center; }
 
+.players-container .player .wins-container { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -webkit-justify-content: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -webkit-align-items: center; -ms-flex-align: center; align-items: center; padding-bottom: 1em; position: relative; top: -1em; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
+
+.players-container .player .wins-container .wins { background: url("../images/laurel-wreath.png") no-repeat center; background-size: cover; width: 45px; height: 36px; margin-left: 0.3em; margin-right: 0.3em; line-height: 35px; color: #FFF; text-align: center; font-size: 1.1em; }
+
+.players-container .player .wins-container button { background: rgba(0, 0, 0, 0.18); border: 0; outline: 0; width: 1.5em; height: 1.5em; border-radius: 4px; }
+
+.players-container .player .wins-container button:hover { opacity: 1; }
+
 .players-container .player .options-container .options-row { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -webkit-justify-content: center; -ms-flex-pack: center; justify-content: center; margin-bottom: 17px; }
 
 .players-container .player .options-container .options-row:last-child { margin-bottom: 15px; }
@@ -188,6 +196,12 @@ main, #app { height: 100%; }
 
 .players-container .player.red .life-container { color: #f7a075; }
 
+.players-container .player.red .wins-container button { background-color: #f7a075; text-shadow: 0 -1px #b37353; box-shadow: 0 -1px #ffefe8, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #ac6b4b; }
+
+.players-container .player.red .wins-container button:active { box-shadow: none; position: relative; top: 2px; }
+
+.players-container .player.red .wins-container button:disabled, .players-container .player.red .wins-container button:disabled:hover { box-shadow: none; opacity: 0.2; }
+
 .players-container .player.red .options-container .option button { background-color: #f7a075; text-shadow: 0 -1px #b37353; box-shadow: 0 -1px #ffefe8, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #ac6b4b; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
 .players-container .player.red .options-container .option button:active { box-shadow: none; position: relative; top: 2px; }
@@ -197,6 +211,12 @@ main, #app { height: 100%; }
 .players-container .player.green .name-container { background-color: #9cc396; }
 
 .players-container .player.green .life-container { color: #9cc396; }
+
+.players-container .player.green .wins-container button { background-color: #9cc396; text-shadow: 0 -1px #7a7a7a; box-shadow: 0 -1px #e4f2e2, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #727272; }
+
+.players-container .player.green .wins-container button:active { box-shadow: none; position: relative; top: 2px; }
+
+.players-container .player.green .wins-container button:disabled, .players-container .player.green .wins-container button:disabled:hover { box-shadow: none; opacity: 0.2; }
 
 .players-container .player.green .options-container .option button { background-color: #9cc396; text-shadow: 0 -1px #7a7a7a; box-shadow: 0 -1px #e4f2e2, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #727272; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
@@ -208,6 +228,12 @@ main, #app { height: 100%; }
 
 .players-container .player.blue .life-container { color: #bcd9e8; }
 
+.players-container .player.blue .wins-container button { background-color: #bcd9e8; text-shadow: 0 -1px #9f9f9f; box-shadow: 0 -1px white, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #979797; }
+
+.players-container .player.blue .wins-container button:active { box-shadow: none; position: relative; top: 2px; }
+
+.players-container .player.blue .wins-container button:disabled, .players-container .player.blue .wins-container button:disabled:hover { box-shadow: none; opacity: 0.2; }
+
 .players-container .player.blue .options-container .option button { background-color: #bcd9e8; text-shadow: 0 -1px #9f9f9f; box-shadow: 0 -1px white, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #979797; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
 .players-container .player.blue .options-container .option button:active { box-shadow: none; position: relative; top: 2px; }
@@ -218,6 +244,12 @@ main, #app { height: 100%; }
 
 .players-container .player.black .life-container { color: #c1b6ae; }
 
+.players-container .player.black .wins-container button { background-color: #c1b6ae; text-shadow: 0 -1px #858585; box-shadow: 0 -1px #f7f4f2, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #7d7d7d; }
+
+.players-container .player.black .wins-container button:active { box-shadow: none; position: relative; top: 2px; }
+
+.players-container .player.black .wins-container button:disabled, .players-container .player.black .wins-container button:disabled:hover { box-shadow: none; opacity: 0.2; }
+
 .players-container .player.black .options-container .option button { background-color: #c1b6ae; text-shadow: 0 -1px #858585; box-shadow: 0 -1px #f7f4f2, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #7d7d7d; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
 .players-container .player.black .options-container .option button:active { box-shadow: none; position: relative; top: 2px; }
@@ -227,6 +259,12 @@ main, #app { height: 100%; }
 .players-container .player.white .name-container { background-color: #f7f5d9; }
 
 .players-container .player.white .life-container { color: #f7f5d9; }
+
+.players-container .player.white .wins-container button { background-color: #f7f5d9; text-shadow: 0 -1px #c0bfaa; box-shadow: 0 -1px white, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #bab8a1; }
+
+.players-container .player.white .wins-container button:active { box-shadow: none; position: relative; top: 2px; }
+
+.players-container .player.white .wins-container button:disabled, .players-container .player.white .wins-container button:disabled:hover { box-shadow: none; opacity: 0.2; }
 
 .players-container .player.white .options-container .option button { background-color: #f7f5d9; text-shadow: 0 -1px #c0bfaa; box-shadow: 0 -1px white, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #bab8a1; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 

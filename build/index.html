@@ -59,6 +59,13 @@
 		var storedState = localStorage.getItem('mtg-state');
 		var startingState = storedState ? JSON.parse(storedState) : null;
 
+		if (startingState !== null && startingState.players[0].wins == undefined) {
+			startingState.players = startingState.players.map(function(el) {
+				el.wins = 0;
+				return el;
+			});
+		}
+
 		// Initialize app
 		var app = document.getElementById('app');
 		var mtg = Elm.embed(Elm.MTG, app, {getStorage: startingState});

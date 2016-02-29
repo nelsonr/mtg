@@ -22,6 +22,7 @@ type alias Player =
   , life: Int
   , edit: Bool
   , nameEdit: String
+  , wins: Int
   }
 
 type alias Players = List Player
@@ -42,6 +43,7 @@ type alias Model =
 type Action 
   = NoOp
   | ResetGame
+  | ResetWins
   | IncreasePlayers
   | DecreasePlayers
   | CyclePlayerColor Id
@@ -49,6 +51,8 @@ type Action
   | EnableNameInput Id
   | UpdateNameInput Id String
   | SaveNameInput Id
+  | IncreaseWins Id
+  | DecreaseWins Id
 
 
 -- HELPER FUNCTIONS --
@@ -98,6 +102,7 @@ newPlayer id name color =
   , life = 20
   , edit = False
   , nameEdit = name
+  , wins = 0
   }
 
 
@@ -125,6 +130,11 @@ update action model =
 
     ResetGame ->
       ( { model | players = List.map (\player -> { player | life = 20 }) model.players }
+      , Effects.none
+      )
+
+    ResetWins ->
+      ( { model | players = List.map (\player -> { player | wins = 0 }) model.players }
       , Effects.none
       )
 
@@ -208,8 +218,63 @@ update action model =
         , Effects.none
         )
 
+    IncreaseWins id ->
+      let
+        addWin player =
+          if player.id == id then
+            { player | wins = player.wins + 1 }
+          else
+            player
+      in
+        ( { model | players = List.map addWin model.players }
+        , Effects.none
+        )
+
+    DecreaseWins id ->
+      let
+        removeWin player =
+          if player.id == id && player.wins > 0 then
+            { player | wins = player.wins - 1 }
+          else
+            player
+      in
+        ( { model | players = List.map removeWin model.players }
+        , Effects.none
+        )
+
 
 -- VIEWS --
+
+
+gameOptionsContainer : Address Action -> Model -> Html
+gameOptionsContainer address model =
+  div 
+    [ class "game-options-container" ]
+    [ div
+        [ class "game-option option-group" ]
+        [ button 
+            [ class "option-reset-game", onClick address ResetGame ] 
+            [ (text "Reset Game") ]
+        , button 
+            [ class "option-reset-wins", onClick address ResetWins ] 
+            [ (text "Reset Wins") ]
+        ]    
+    , div
+        [ class "game-option option-group" ]
+        [ button 
+            [ class "option" 
+            , disabled (model.activePlayers == 2)
+            , onClick address DecreasePlayers 
+            ] 
+            [ (text "Remove Player") ]
+        , button 
+            [ class "option"
+            , disabled (model.activePlayers == 5)
+            , onClick address IncreasePlayers 
+            ] 
+            [ (text "Add Player") ] 
+        ]
+    ]
 
 
 nameContainer : Address Action -> Player -> Html
@@ -256,6 +321,17 @@ playerBox address player =
         [ class "life-container", onClick address (CyclePlayerColor player.id) ] 
         [ div [ class "life" ] [ text (toString player.life) ] ]
     , div 
+        [ class "wins-container" ] 
+        [ button 
+            [ class "minus-win"
+            , onClick address (DecreaseWins player.id)
+            , disabled (player.wins < 1)
+            ] 
+            [ (text "-") ]
+        , div [ class "wins" ] [ text (toString player.wins) ]
+        , button [ class "plus-win", onClick address (IncreaseWins player.id) ] [ (text "+") ]
+        ]
+    , div 
         [ class "options-container" ] 
         [ div 
             [ class "options-row" ] 
@@ -291,34 +367,6 @@ playersContainer address players =
           [ class ("players-container players-" ++ (toString playersCount)) ]
           playersList
       ]
-
-
-gameOptionsContainer : Address Action -> Model -> Html
-gameOptionsContainer address model =
-  div 
-    [ class "game-options-container" ]
-    [ div
-        [ class "game-option" ]
-        [ button 
-            [ class "option-reset", onClick address ResetGame ] 
-            [ (text "Reset Game") ] 
-        ]
-    , div
-        [ class "game-option option-group" ]
-        [ button 
-            [ class "option" 
-            , disabled (model.activePlayers == 2)
-            , onClick address DecreasePlayers 
-            ] 
-            [ (text "Remove Player") ]
-        , button 
-            [ class "option"
-            , disabled (model.activePlayers == 5)
-            , onClick address IncreasePlayers 
-            ] 
-            [ (text "Add Player") ] 
-        ]
-    ]
 
 
 -- MAIN VIEW --

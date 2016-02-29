@@ -53,6 +53,17 @@ main, #app {
       color: $color;
     }
 
+    .wins-container {
+      button {
+        @include button-3d($color);
+
+        &:disabled, &:disabled:hover {
+          box-shadow: none;
+          opacity: 0.2;
+        }
+      }
+    }
+
     .options-container {
       .option {
         button {
@@ -226,7 +237,44 @@ main, #app {
       .life {
         font-size: 147px;
         text-align: center;
-      } 
+      }
+    }
+
+    .wins-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 1em;
+      position: relative;
+      top: -1em;
+
+      @include no-text-selection();
+
+      .wins {
+        background: url('../images/laurel-wreath.png') no-repeat center;
+        background-size: cover;
+        width: 45px;
+        height: 36px;
+        margin-left: 0.3em;
+        margin-right: 0.3em;
+        line-height: 35px;
+        color: #FFF;
+        text-align: center;
+        font-size: 1.1em;
+      }
+
+      button {
+        background: rgba(0, 0, 0, 0.18);
+        border: 0;
+        outline: 0;
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 4px;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
 
     .options-container {
