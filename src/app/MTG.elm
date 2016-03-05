@@ -285,15 +285,15 @@ nameContainer address player =
       [ div
           [ class "form" ]
           [ input 
-            [ type' "text"
-            , placeholder player.name
-            , value player.nameEdit
-            , name "player_name"
-            , autofocus True
-            , onInput address (UpdateNameInput player.id)
-            , onEnter address (SaveNameInput player.id)
-            ]
-            []
+              [ type' "text"
+              , placeholder player.name
+              , value player.nameEdit
+              , name "player_name"
+              , autofocus True
+              , onInput address (UpdateNameInput player.id)
+              , onEnter address (SaveNameInput player.id)
+              ]
+              []
           , button 
               [ class "submit", onClick address (SaveNameInput player.id) ] 
               [ text "Save" ]
