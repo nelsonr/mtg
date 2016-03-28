@@ -132,6 +132,16 @@ secondsToTimeStr seconds =
     timeToStr(h) ++ ":" ++ timeToStr(m) ++ ":" ++ timeToStr(s)
 
 
+countAlivePlayers : Int -> Players -> Int
+countAlivePlayers activePlayersCount playersList =
+  let
+    activePlayersList = List.take activePlayersCount playersList
+  in
+    activePlayersList
+    |> List.filter (\p -> p.life > 0)
+    |> List.length
+
+
 -- INITIAL MODEL --
 
 
@@ -237,10 +247,13 @@ update action model =
             { player | life = player.life + life }
           else
             player
+
+        playersList = List.map setLife model.players
+        alivePlayersCount = countAlivePlayers model.activePlayers playersList
       in
         ( { model 
-              | players = List.map setLife model.players
-              , timeIsRunning = True
+              | players = playersList
+              , timeIsRunning = alivePlayersCount > 1
           }
         , Effects.none
         )

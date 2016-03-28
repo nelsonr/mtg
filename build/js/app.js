@@ -11887,6 +11887,17 @@ Elm.MTG.make = function (_elm) {
                       ,timeIsRunning: false};
    var loadModel = A2($Maybe.withDefault,initialModel,getStorage);
    var init = {ctor: "_Tuple2",_0: loadModel,_1: $Effects.none};
+   var countAlivePlayers = F2(function (activePlayersCount,
+   playersList) {
+      var activePlayersList = A2($List.take,
+      activePlayersCount,
+      playersList);
+      return $List.length(A2($List.filter,
+      function (p) {
+         return _U.cmp(p.life,0) > 0;
+      },
+      activePlayersList));
+   });
    var secondsToTimeStr = function (seconds) {
       var timeToStr = function (t) {
          return _U.cmp(t,10) < 0 ? A2($Basics._op["++"],
@@ -11996,10 +12007,14 @@ Elm.MTG.make = function (_elm) {
               return _U.eq(player.id,_p3._0) ? _U.update(player,
               {life: player.life + _p3._1}) : player;
            };
+           var playersList = A2($List.map,setLife,model.players);
+           var alivePlayersCount = A2(countAlivePlayers,
+           model.activePlayers,
+           playersList);
            return {ctor: "_Tuple2"
                   ,_0: _U.update(model,
-                  {players: A2($List.map,setLife,model.players)
-                  ,timeIsRunning: true})
+                  {players: playersList
+                  ,timeIsRunning: _U.cmp(alivePlayersCount,1) > 0})
                   ,_1: $Effects.none};
          case "UpdateNameInput": var setNameEdit = function (player) {
               return _U.eq(player.id,_p3._0) ? _U.update(player,
@@ -12301,6 +12316,7 @@ Elm.MTG.make = function (_elm) {
                             ,is13: is13
                             ,getNextColor: getNextColor
                             ,secondsToTimeStr: secondsToTimeStr
+                            ,countAlivePlayers: countAlivePlayers
                             ,newPlayer: newPlayer
                             ,initialModel: initialModel
                             ,update: update
