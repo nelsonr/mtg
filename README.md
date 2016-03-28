@@ -15,6 +15,7 @@ A web app to keep track of your Magic: The Gathering games.
 * Add up to 5 players
 * Track players life and wins
 * Change the name and color of the players
+* Stopwatch to track game time
 * Uses local storage to save the game between sessions
 
 #### Disclaimer
