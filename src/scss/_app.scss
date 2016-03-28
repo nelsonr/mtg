@@ -108,6 +108,49 @@ main, #app {
         opacity: 0.5;
       }
     }
+
+    button.btn-sm {
+      font-size: 0.8em;
+    }
+
+    .button-group {
+      button {
+        border-radius: 0;
+        margin: 0;
+
+        &:first-child {
+          border-top-left-radius: 5px;
+          border-bottom-left-radius: 5px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
+        }
+
+        &:active {
+          top: 0;
+        }
+      }
+    }
+  }
+}
+
+.timer-container {
+  color: #FFF;
+  position: relative;
+  top: 0.2em;
+
+  .timer {
+    font-size: 1.1em;
+    text-align: center;
+    font-family: 'Droid Sans Mono', monospace;
+    display: inline-block;
+  }
+
+  .timer + button {
+    display: inline-block;    
+    width: 54px;
   }
 }
 

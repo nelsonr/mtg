@@ -1,79 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>MTG — Game Tracker</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" href="images/favicon.png">
-	<link rel="stylesheet" href="css/styles.css">
-	<script src="js/app.js"></script>
+  <meta charset="UTF-8">
+  <title>MTG — Game Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="images/favicon.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/app.js"></script>
 </head>
 <body>
-	<main>
-		<div id="app">
-			<div class="players-container">
-				<!-- Start player example -->
-				<!-- <div class="player green">
-					<div class="name-container">
-						<div class="name">Player 1</div>
-					</div>
-					
-					<div class="life-container">
-						<div class="life">20</div>
-					</div>
-			
-					<div class="options-container">
-						<div class="options-row">
-							<div class="option option-plus-one">
-								<button>+1</button>
-							</div>
-							<div class="option option-plus-five">
-								<button>+5</button>
-							</div>
-						</div>
-			
-						<div class="options-row">
-							<div class="option option-minus-one">
-								<button>-1</button>
-							</div>
-							<div class="option option-minus-five">
-								<button>-5</button>
-							</div>
-						</div>
-					</div>
-				</div> -->
-				<!-- End player example -->
-			</div>
-		</div>
-	</main>
+  <main>
+    <div id="app">
+      <div class="players-container">
+          <!-- Start player example -->
+          <!-- <div class="player green">
+              <div class="name-container">
+                  <div class="name">Player 1</div>
+              </div>
+              
+              <div class="life-container">
+                  <div class="life">20</div>
+              </div>
+      
+              <div class="options-container">
+                  <div class="options-row">
+                      <div class="option option-plus-one">
+                          <button>+1</button>
+                      </div>
+                      <div class="option option-plus-five">
+                          <button>+5</button>
+                      </div>
+                  </div>
+      
+                  <div class="options-row">
+                      <div class="option option-minus-one">
+                          <button>-1</button>
+                      </div>
+                      <div class="option option-minus-five">
+                          <button>-5</button>
+                      </div>
+                  </div>
+              </div>
+          </div> -->
+          <!-- End player example -->
+      </div>
+    </div>
+  </main>
 
-	<script type="text/javascript">
-		// Preload mana images
-		var img = null;
-		['black', 'blue', 'green', 'red', 'white'].forEach(function(color) {
-			img = document.createElement('img');
-			img.src = 'images/mana-' + color + '.png';
-		});
+  <script type="text/javascript">
+    // Preload mana images
+    var img = null;
+    ['black', 'blue', 'green', 'red', 'white'].forEach(function(color) {
+      img = document.createElement('img');
+      img.src = 'images/mana-' + color + '.png';
+    });
 
-		// Load app state from local storage
-		var storedState = localStorage.getItem('mtg-state');
-		var startingState = storedState ? JSON.parse(storedState) : null;
+    // Load app state from local storage
+    var storedState = localStorage.getItem('mtg-state');
+    var startingState = storedState ? JSON.parse(storedState) : null;
 
-		if (startingState !== null && startingState.players[0].wins == undefined) {
-			startingState.players = startingState.players.map(function(el) {
-				el.wins = 0;
-				return el;
-			});
-		}
+    if (startingState !== null) {
+      if (startingState.players[0].wins == undefined) {
+        startingState.players = startingState.players.map(function(el) {
+          el.wins = 0;
+          return el;
+        });
+      }
 
-		// Initialize app
-		var app = document.getElementById('app');
-		var mtg = Elm.embed(Elm.MTG, app, {getStorage: startingState});
+      if (startingState.currentTime == undefined) {
+        startingState.currentTime = 0;
+      }
 
-		// Update local storage whenever there's a change in the app state
-		mtg.ports.setStorage.subscribe(function(state) {
-		    localStorage.setItem('mtg-state', JSON.stringify(state));
-		});
-	</script>
+      if (startingState.timeIsRunning == undefined) {
+        startingState.timeIsRunning = false;
+      }
+    }
+
+    // Initialize app
+    var app = document.getElementById('app');
+    var mtg = Elm.embed(Elm.MTG, app, {getStorage: startingState});
+
+    // Update local storage whenever there's a change in the app state
+    mtg.ports.setStorage.subscribe(function(state) {
+      localStorage.setItem('mtg-state', JSON.stringify(state));
+    });
+  </script>
 </body>
 </html>

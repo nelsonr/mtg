@@ -1,10 +1,10 @@
-module MTG where
+module MTG (..) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as Json
-
+import Time
 import Signal exposing (Address)
 import Effects exposing (Effects)
 import StartApp exposing (App)
@@ -13,35 +13,43 @@ import StartApp exposing (App)
 -- TYPE DEFINITIONS --
 
 
-type alias Id = Int
+type alias Id =
+  Int
+
 
 type alias Player =
-  { id: Id
-  , name: String
-  , color: String
-  , life: Int
-  , edit: Bool
-  , nameEdit: String
-  , wins: Int
+  { id : Id
+  , name : String
+  , color : String
+  , life : Int
+  , edit : Bool
+  , nameEdit : String
+  , wins : Int
   }
 
-type alias Players = List Player
+
+type alias Players =
+  List Player
 
 
 -- MODEL DEFINITION --
 
 
-type alias Model = 
-  { players: Players 
-  , activePlayers: Int
+type alias Model =
+  { players : Players
+  , activePlayers : Int
+  , currentTime : Int
+  , timeIsRunning : Bool
   }
 
 
 -- ACTIONS LIST --
 
 
-type Action 
+type Action
   = NoOp
+  | IncrementTimer
+  | StartStopTimer
   | ResetGame
   | ResetWins
   | IncreasePlayers
@@ -65,30 +73,63 @@ onInput address f =
 
 onEnter : Address a -> a -> Attribute
 onEnter address value =
-  on "keydown"
+  on
+    "keydown"
     (Json.customDecoder keyCode is13)
     (\_ -> Signal.message address value)
 
 
 is13 : Int -> Result String ()
 is13 code =
-  if code == 13 then Ok () else Err "not the right key code"
+  if code == 13 then
+    Ok ()
+  else
+    Err "not the right key code"
 
 
 getNextColor : String -> String
 getNextColor currentColor =
   let
-    colorList = [ "red", "green", "black", "blue", "white" ]
+    colorList =
+      [ "red", "green", "black", "blue", "white" ]
+
     findNext list color =
       case list of
-        []         -> Nothing
-        head::[]   -> List.head colorList
-        head::tail -> if head == color then List.head tail else findNext tail color
+        [] ->
+          Nothing
+
+        head :: [] ->
+          List.head colorList
+
+        head :: tail ->
+          if head == color then
+            List.head tail
+          else
+            findNext tail color
   in
     case (findNext colorList currentColor) of
-      Just newColor -> newColor
-      Nothing       -> currentColor
+      Just newColor ->
+        newColor
 
+      Nothing ->
+        currentColor
+
+
+secondsToTimeStr : Int -> String
+secondsToTimeStr seconds =
+  let
+    secs = toFloat(seconds)
+    h = floor(secs / 3600)
+    m = floor((secs - toFloat(h * 3600)) / 60)
+    s = floor(secs - toFloat(h * 3600) - toFloat(m * 60))
+    
+    timeToStr t =
+      if t < 10 then
+        "0" ++ toString(t)
+      else
+        toString(t)
+  in
+    timeToStr(h) ++ ":" ++ timeToStr(m) ++ ":" ++ timeToStr(s)
 
 
 -- INITIAL MODEL --
@@ -108,7 +149,7 @@ newPlayer id name color =
 
 initialModel : Model
 initialModel =
-  { players = 
+  { players =
       [ newPlayer 1 "Player 1" "red"
       , newPlayer 2 "Player 2" "green"
       , newPlayer 3 "Player 3" "black"
@@ -116,20 +157,39 @@ initialModel =
       , newPlayer 5 "Player 5" "white"
       ]
   , activePlayers = 2
+  , currentTime = 0
+  , timeIsRunning = False
   }
 
 
 -- UPDATE --
 
 
-update : Action -> Model -> (Model, Effects Action)
+update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
     NoOp ->
       ( model, Effects.none )
 
+    IncrementTimer ->
+      if model.timeIsRunning == True then
+        ( { model | currentTime = model.currentTime + 1 }
+        , Effects.none
+        )
+      else
+        ( model, Effects.none )
+
+    StartStopTimer ->
+      ( { model | timeIsRunning = not model.timeIsRunning }
+      , Effects.none
+      )
+
     ResetGame ->
-      ( { model | players = List.map (\player -> { player | life = 20 }) model.players }
+      ( { model 
+            | players = List.map (\player -> { player | life = 20 }) model.players
+            , currentTime = 0
+            , timeIsRunning = False
+        }
       , Effects.none
       )
 
@@ -145,7 +205,7 @@ update action model =
         )
       else
         ( model
-        , Effects.none 
+        , Effects.none
         )
 
     DecreasePlayers ->
@@ -178,7 +238,10 @@ update action model =
           else
             player
       in
-        ( { model | players = List.map setLife model.players }
+        ( { model 
+              | players = List.map setLife model.players
+              , timeIsRunning = True
+          }
         , Effects.none
         )
 
@@ -246,33 +309,60 @@ update action model =
 -- VIEWS --
 
 
+timerContainer : Address Action -> Model -> Html
+timerContainer address model =
+  let
+    startStopBtnTxt =
+      if model.timeIsRunning == True then
+        "Stop"
+      else
+        "Start"
+  in
+    div
+      [ classList 
+          [ ("timer-container", True)
+          , ("running", model.timeIsRunning) 
+          ]
+      ]
+      [ div
+          [ class "timer" ]
+          [ text (secondsToTimeStr model.currentTime) ]
+      , button
+          [ class "btn-sm", onClick address StartStopTimer ]
+          [ (text startStopBtnTxt) ]
+      ]
+
+
 gameOptionsContainer : Address Action -> Model -> Html
 gameOptionsContainer address model =
-  div 
+  div
     [ class "game-options-container" ]
     [ div
         [ class "game-option option-group" ]
-        [ button 
-            [ class "option-reset-game", onClick address ResetGame ] 
+        [ button
+            [ class "option-reset-game", onClick address ResetGame ]
             [ (text "Reset Game") ]
-        , button 
-            [ class "option-reset-wins", onClick address ResetWins ] 
+        , button
+            [ class "option-reset-wins", onClick address ResetWins ]
             [ (text "Reset Wins") ]
-        ]    
+        ]
+    , div
+        [ class "game-option" ]
+        [ timerContainer address model ]
     , div
         [ class "game-option option-group" ]
-        [ button 
-            [ class "option" 
+        [ button
+            [ class "option"
             , disabled (model.activePlayers == 2)
-            , onClick address DecreasePlayers 
-            ] 
+            , onClick address DecreasePlayers
+            ]
             [ (text "Remove Player") ]
-        , button 
+        , button
             [ class "option"
             , disabled (model.activePlayers == 5)
-            , onClick address IncreasePlayers 
-            ] 
-            [ (text "Add Player") ] 
+            , onClick address IncreasePlayers
+            ]
+            [ (text "Add Player") ]
         ]
     ]
 
@@ -280,11 +370,11 @@ gameOptionsContainer address model =
 nameContainer : Address Action -> Player -> Html
 nameContainer address player =
   if player.edit then
-    div 
-      [ class "name-container" ] 
+    div
+      [ class "name-container" ]
       [ div
           [ class "form" ]
-          [ input 
+          [ input
               [ type' "text"
               , placeholder player.name
               , value player.nameEdit
@@ -294,61 +384,61 @@ nameContainer address player =
               , onEnter address (SaveNameInput player.id)
               ]
               []
-          , button 
-              [ class "submit", onClick address (SaveNameInput player.id) ] 
+          , button
+              [ class "submit", onClick address (SaveNameInput player.id) ]
               [ text "Save" ]
           ]
       ]
   else
-    div 
-      [ class "name-container" ] 
-      [ div 
-          [ class "name", onClick address (EnableNameInput player.id) ] 
-          [ (text player.name) ] 
+    div
+      [ class "name-container" ]
+      [ div
+          [ class "name", onClick address (EnableNameInput player.id) ]
+          [ (text player.name) ]
       ]
 
 
 playerBox : Address Action -> Player -> Html
 playerBox address player =
   div
-    [ classList 
-        [ ("player " ++ player.color,  True ) 
-        , ("deceased", player.life <= 0)
+    [ classList
+        [ ( "player " ++ player.color, True )
+        , ( "deceased", player.life <= 0 )
         ]
     ]
     [ nameContainer address player
-    , div 
-        [ class "life-container", onClick address (CyclePlayerColor player.id) ] 
+    , div
+        [ class "life-container", onClick address (CyclePlayerColor player.id) ]
         [ div [ class "life" ] [ text (toString player.life) ] ]
-    , div 
-        [ class "wins-container" ] 
-        [ button 
+    , div
+        [ class "wins-container" ]
+        [ button
             [ class "minus-win"
             , onClick address (DecreaseWins player.id)
             , disabled (player.wins < 1)
-            ] 
+            ]
             [ (text "-") ]
         , div [ class "wins" ] [ text (toString player.wins) ]
         , button [ class "plus-win", onClick address (IncreaseWins player.id) ] [ (text "+") ]
         ]
-    , div 
-        [ class "options-container" ] 
-        [ div 
-            [ class "options-row" ] 
-            [ div 
-                [ class "option", onClick address (UpdateLife player.id 1) ] 
+    , div
+        [ class "options-container" ]
+        [ div
+            [ class "options-row" ]
+            [ div
+                [ class "option", onClick address (UpdateLife player.id 1) ]
                 [ button [] [ (text "+1") ] ]
-            , div 
-                [ class "option", onClick address (UpdateLife player.id 5) ] 
+            , div
+                [ class "option", onClick address (UpdateLife player.id 5) ]
                 [ button [] [ (text "+5") ] ]
             ]
-        , div 
-            [ class "options-row" ] 
-            [ div 
-                [ class "option", onClick address (UpdateLife player.id -1) ] 
+        , div
+            [ class "options-row" ]
+            [ div
+                [ class "option", onClick address (UpdateLife player.id -1) ]
                 [ button [] [ (text "-1") ] ]
-            , div 
-                [ class "option", onClick address (UpdateLife player.id -5) ] 
+            , div
+                [ class "option", onClick address (UpdateLife player.id -5) ]
                 [ button [] [ (text "-5") ] ]
             ]
         ]
@@ -358,12 +448,15 @@ playerBox address player =
 playersContainer : Address Action -> Players -> Html
 playersContainer address players =
   let
-    playersList = (List.map (playerBox address) players)
-    playersCount = (List.length players)
+    playersList =
+      (List.map (playerBox address) players)
+
+    playersCount =
+      (List.length players)
   in
     div
       [ class "overflow-container" ]
-      [ div 
+      [ div
           [ class ("players-container players-" ++ (toString playersCount)) ]
           playersList
       ]
@@ -374,7 +467,7 @@ playersContainer address players =
 
 view : Address Action -> Model -> Html
 view address model =
-  div 
+  div
     [ class "board" ]
     [ gameOptionsContainer address model
     , playersContainer address (List.take model.activePlayers model.players)
@@ -385,13 +478,14 @@ view address model =
 
 
 loadModel : Model
-loadModel = 
+loadModel =
   Maybe.withDefault initialModel getStorage
 
 
-init : (Model, Effects Action)
+init : ( Model, Effects Action )
 init =
-  (loadModel, Effects.none)
+  ( loadModel, Effects.none )
+
 
 
 -- APP CONFIG --
@@ -402,7 +496,7 @@ app =
     { view = view
     , update = update
     , init = init
-    , inputs = []
+    , inputs = [ Signal.map (\_ -> IncrementTimer) (Time.every Time.second) ]
     }
 
 
@@ -415,10 +509,11 @@ port getStorage : Maybe Model
 
 -- Output port (send to JS)
 port setStorage : Signal Model
-port setStorage = app.model
+port setStorage =
+  app.model
 
 
--- APP INITIALIZATION -- 
+-- APP INITIALIZATION --
 
 
 main : Signal Html
