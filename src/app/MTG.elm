@@ -358,7 +358,7 @@ gameOptionsContainer address model =
         [ class "game-option option-group" ]
         [ button
             [ class "option-reset-game", onClick address ResetGame ]
-            [ (text "Reset Game") ]
+            [ (text "New Game") ]
         , button
             [ class "option-reset-wins", onClick address ResetWins ]
             [ (text "Reset Wins") ]

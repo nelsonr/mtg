@@ -12242,7 +12242,7 @@ Elm.MTG.make = function (_elm) {
               _U.list([A2($Html.button,
                       _U.list([$Html$Attributes.$class("option-reset-game")
                               ,A2($Html$Events.onClick,address,ResetGame)]),
-                      _U.list([$Html.text("Reset Game")]))
+                      _U.list([$Html.text("New Game")]))
                       ,A2($Html.button,
                       _U.list([$Html$Attributes.$class("option-reset-wins")
                               ,A2($Html$Events.onClick,address,ResetWins)]),
