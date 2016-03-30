@@ -132,14 +132,18 @@ secondsToTimeStr seconds =
     timeToStr(h) ++ ":" ++ timeToStr(m) ++ ":" ++ timeToStr(s)
 
 
-countAlivePlayers : Int -> Players -> Int
-countAlivePlayers activePlayersCount playersList =
+getAlivePlayers : Int -> Players -> Players
+getAlivePlayers activePlayersCount playersList =
   let
     activePlayersList = List.take activePlayersCount playersList
   in
     activePlayersList
     |> List.filter (\p -> p.life > 0)
-    |> List.length
+
+
+countAlivePlayers : Int -> Players -> Int
+countAlivePlayers activePlayersCount playersList =
+  List.length (getAlivePlayers activePlayersCount playersList)
 
 
 -- INITIAL MODEL --
@@ -249,11 +253,11 @@ update action model =
             player
 
         playersList = List.map setLife model.players
-        alivePlayersCount = countAlivePlayers model.activePlayers playersList
+        playersAliveCount = countAlivePlayers model.activePlayers playersList
       in
         ( { model 
               | players = playersList
-              , timeIsRunning = alivePlayersCount > 1
+              , timeIsRunning = playersAliveCount > 1
           }
         , Effects.none
         )
@@ -475,17 +479,67 @@ playersContainer address players =
       ]
 
 
+victoryMessageContainer : Address Action -> Player -> Html
+victoryMessageContainer address player =
+  div
+    [ class "victory-message-container" ]
+    [ h1 
+        [] 
+        [ (text player.name)
+        , (text " WINS!") 
+        ]
+    , div
+        [ class "game-option" ]
+        [ button
+            [ class "option"
+            , onClick address ResetGame
+            ]
+            [ (text "New Game") ] ]
+    ]
+
+
+gameOverView : Address Action -> Model -> Player -> Html
+gameOverView address model player =
+  div 
+    [ class "main" ]
+    [ div
+      [ class "board shake" ]
+      [ gameOptionsContainer address model
+      , playersContainer address (List.take model.activePlayers model.players)
+      ]
+    , victoryMessageContainer address player
+    ]
+
+
+defaultView : Address Action -> Model -> Html
+defaultView address model =
+  div 
+    [class "main" ]
+    [ div
+      [ class "board" ]
+      [ gameOptionsContainer address model
+      , playersContainer address (List.take model.activePlayers model.players)
+      ]
+    ]
+
+
 -- MAIN VIEW --
 
 
 view : Address Action -> Model -> Html
 view address model =
-  div
-    [ class "board" ]
-    [ gameOptionsContainer address model
-    , playersContainer address (List.take model.activePlayers model.players)
-    ]
+  let
+    alivePlayers = getAlivePlayers model.activePlayers model.players
+  in
+    if List.length alivePlayers == 1 then
+      case List.head alivePlayers of
+        Just player ->
+          gameOverView address model player
 
+        Nothing ->
+          defaultView address model
+    else
+      defaultView address model
 
 -- INIT --
 
@@ -498,7 +552,6 @@ loadModel =
 init : ( Model, Effects Action )
 init =
   ( loadModel, Effects.none )
-
 
 
 -- APP CONFIG --
@@ -516,11 +569,11 @@ app =
 -- PORTS --
 
 
--- Input port (from JS)
+{- Input port (from JS) -}
 port getStorage : Maybe Model
 
 
--- Output port (send to JS)
+{- Output port (send to JS) -}
 port setStorage : Signal Model
 port setStorage =
   app.model

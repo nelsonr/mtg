@@ -1,3 +1,37 @@
+@-webkit-keyframes fadeInFromTop { 0% { -webkit-transform: translateY(-50%); transform: translateY(-50%);
+    opacity: 0; }
+  100% { -webkit-transform: translateY(0); transform: translateY(0);
+    opacity: 1; } }
+
+@keyframes fadeInFromTop { 0% { -webkit-transform: translateY(-50%); transform: translateY(-50%);
+    opacity: 0; }
+  100% { -webkit-transform: translateY(0); transform: translateY(0);
+    opacity: 1; } }
+
+@-webkit-keyframes fadeIn { 0% { opacity: 0; }
+  100% { opacity: 1; } }
+
+@keyframes fadeIn { 0% { opacity: 0; }
+  100% { opacity: 1; } }
+
+@-webkit-keyframes scale { 0% { -webkit-transform: scale(0); transform: scale(0); }
+  100% { -webkit-transform: scale(1); transform: scale(1); } }
+
+@keyframes scale { 0% { -webkit-transform: scale(0); transform: scale(0); }
+  100% { -webkit-transform: scale(1); transform: scale(1); } }
+
+@-webkit-keyframes shake { 0% { -webkit-transform: translateX(-1%) translateY(-1%); transform: translateX(-1%) translateY(-1%); }
+  25% { -webkit-transform: translateX(1%) translateY(0); transform: translateX(1%) translateY(0); }
+  50% { -webkit-transform: translateX(-1%) translateY(1%); transform: translateX(-1%) translateY(1%); }
+  75% { -webkit-transform: translateX(1%) translateY(-1%); transform: translateX(1%) translateY(-1%); }
+  100% { -webkit-transform: translate(0); transform: translate(0); } }
+
+@keyframes shake { 0% { -webkit-transform: translateX(-1%) translateY(-1%); transform: translateX(-1%) translateY(-1%); }
+  25% { -webkit-transform: translateX(1%) translateY(0); transform: translateX(1%) translateY(0); }
+  50% { -webkit-transform: translateX(-1%) translateY(1%); transform: translateX(-1%) translateY(1%); }
+  75% { -webkit-transform: translateX(1%) translateY(-1%); transform: translateX(1%) translateY(-1%); }
+  100% { -webkit-transform: translate(0); transform: translate(0); } }
+
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 /** 1. Set default font family to sans-serif. 2. Prevent iOS and IE text size adjust after device orientation change, without disabling user zoom. */
 html { font-family: sans-serif; /* 1 */ -ms-text-size-adjust: 100%; /* 2 */ -webkit-text-size-adjust: 100%; /* 2 */ }
@@ -130,29 +164,33 @@ td, th { padding: 0; }
 
 html, body { height: 100%; margin: 0; }
 
-body { margin: 0; background-color: #252525; background-image: url("../images/bg.png"); background-position: center; background-attachment: fixed; background-size: cover; font-family: 'Beleren'; }
+body { background-color: #252525; margin: 0; font-family: 'Beleren'; }
 
 main, #app { height: 100%; }
 
-.board { height: 100%; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; -ms-flex-direction: column; flex-direction: column; }
+.main { height: 100%; position: relative; }
+
+.board { background-image: url("../images/bg.png"); background-position: center; background-attachment: fixed; background-size: cover; height: 100%; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; -ms-flex-direction: column; flex-direction: column; position: relative; }
+
+.board.shake { -webkit-animation: shake 150ms; animation: shake 150ms; -webkit-animation-delay: 520ms; animation-delay: 520ms; }
 
 .game-options-container { padding: 0.5em 1em; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-justify-content: space-around; -ms-flex-pack: distribute; justify-content: space-around; position: relative; top: 1em; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
-.game-options-container .game-option button { color: #FFF; font-size: 1em; border-radius: 5px; border: 0; padding: 0.4em 0.9em; outline: 0; margin-left: 0.5em; margin-right: 0.5em; background-color: #773B3B; text-shadow: 0 -1px #262626; box-shadow: 0 -1px #c46868, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #1e1e1e; }
+.game-option button { color: #FFF; font-size: 1em; border-radius: 5px; border: 0; padding: 0.4em 0.9em; outline: 0; margin-left: 0.5em; margin-right: 0.5em; background-color: #773B3B; text-shadow: 0 -1px #262626; box-shadow: 0 -1px #c46868, 0 2px 4px rgba(0, 0, 0, 0.5), 0 2px #1e1e1e; }
 
-.game-options-container .game-option button:active { box-shadow: none; position: relative; top: 2px; }
+.game-option button:active { box-shadow: none; position: relative; top: 2px; }
 
-.game-options-container .game-option button:disabled { box-shadow: none; opacity: 0.5; }
+.game-option button:disabled { box-shadow: none; opacity: 0.5; }
 
-.game-options-container .game-option button.btn-sm { font-size: 0.8em; }
+.game-option button.btn-sm { font-size: 0.8em; }
 
-.game-options-container .game-option .button-group button { border-radius: 0; margin: 0; }
+.game-option .button-group button { border-radius: 0; margin: 0; }
 
-.game-options-container .game-option .button-group button:first-child { border-top-left-radius: 5px; border-bottom-left-radius: 5px; }
+.game-option .button-group button:first-child { border-top-left-radius: 5px; border-bottom-left-radius: 5px; }
 
-.game-options-container .game-option .button-group button:last-child { border-top-right-radius: 5px; border-bottom-right-radius: 5px; }
+.game-option .button-group button:last-child { border-top-right-radius: 5px; border-bottom-right-radius: 5px; }
 
-.game-options-container .game-option .button-group button:active { top: 0; }
+.game-option .button-group button:active { top: 0; }
 
 .timer-container { color: #FFF; position: relative; top: 0.2em; }
 
@@ -289,3 +327,9 @@ main, #app { height: 100%; }
 .players-container .player.white .options-container .option button:active { box-shadow: none; position: relative; top: 2px; }
 
 .players-container .player.blue, .players-container .player.white { color: #464646; }
+
+.victory-message-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: #FFF; text-align: center; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; -ms-flex-direction: column; flex-direction: column; -webkit-box-pack: center; -webkit-justify-content: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -webkit-align-items: center; -ms-flex-align: center; align-items: center; text-transform: uppercase; background-color: rgba(0, 0, 0, 0.5); opacity: 0; -webkit-animation: fadeIn 300ms ease-out forwards; animation: fadeIn 300ms ease-out forwards; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
+
+.victory-message-container h1 { font-size: 6em; -webkit-animation: scale 150ms forwards; animation: scale 150ms forwards; -webkit-animation-delay: 500ms; animation-delay: 500ms; -webkit-transform: scale(0); transform: scale(0); margin: 0; margin-bottom: 0.1em; }
+
+.victory-message-container .game-option { -webkit-animation: fadeInFromTop 700ms ease-out forwards; animation: fadeInFromTop 700ms ease-out forwards; -webkit-animation-delay: 800ms; animation-delay: 800ms; opacity: 0; }

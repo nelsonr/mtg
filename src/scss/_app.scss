@@ -4,12 +4,8 @@ html, body {
 }
 
 body {
-  margin: 0;
   background-color: #252525;
-  background-image: url('../images/bg.png');
-  background-position: center;
-  background-attachment: fixed;
-  background-size: cover;
+  margin: 0;
   font-family: 'Beleren';
 }
 
@@ -75,10 +71,25 @@ main, #app {
   }
 }
 
+.main {
+  height: 100%;
+  position: relative;
+}
+
 .board {
+  background-image: url('../images/bg.png');
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  &.shake {
+    animation: shake 150ms;
+    animation-delay: 520ms;
+  }
 }
 
 .game-options-container {
@@ -89,48 +100,48 @@ main, #app {
   top: 1em;
 
   @include no-text-selection();
+}
 
-  .game-option {
+.game-option {
+  button {
+    color: #FFF;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 0;
+    padding: 0.4em 0.9em;
+    outline: 0;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+
+    @include button-3d($game-option);
+
+    &:disabled {
+      box-shadow: none;
+      opacity: 0.5;
+    }
+  }
+
+  button.btn-sm {
+    font-size: 0.8em;
+  }
+
+  .button-group {
     button {
-      color: #FFF;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 0;
-      padding: 0.4em 0.9em;
-      outline: 0;
-      margin-left: 0.5em;
-      margin-right: 0.5em;
+      border-radius: 0;
+      margin: 0;
 
-      @include button-3d($game-option);
-
-      &:disabled {
-        box-shadow: none;
-        opacity: 0.5;
+      &:first-child {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
       }
-    }
 
-    button.btn-sm {
-      font-size: 0.8em;
-    }
+      &:last-child {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
 
-    .button-group {
-      button {
-        border-radius: 0;
-        margin: 0;
-
-        &:first-child {
-          border-top-left-radius: 5px;
-          border-bottom-left-radius: 5px;
-        }
-
-        &:last-child {
-          border-top-right-radius: 5px;
-          border-bottom-right-radius: 5px;
-        }
-
-        &:active {
-          top: 0;
-        }
+      &:active {
+        top: 0;
       }
     }
   }
@@ -360,5 +371,40 @@ main, #app {
 
   .player.blue, .player.white {
     color: $gray-text;
+  }
+}
+
+.victory-message-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #FFF;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  background-color: rgba(0,0,0,0.5);
+  opacity: 0;
+  animation: fadeIn 300ms ease-out forwards;
+
+  @include no-text-selection();
+
+  h1 {
+    font-size: 6em;
+    animation: scale 150ms forwards;
+    animation-delay: 500ms;
+    transform: scale(0);
+    margin: 0;
+    margin-bottom: 0.1em;
+  }
+
+  .game-option {
+    animation: fadeInFromTop 700ms ease-out forwards;
+    animation-delay: 800ms;
+    opacity: 0;
   }
 }

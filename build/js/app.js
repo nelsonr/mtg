@@ -11887,16 +11887,22 @@ Elm.MTG.make = function (_elm) {
                       ,timeIsRunning: false};
    var loadModel = A2($Maybe.withDefault,initialModel,getStorage);
    var init = {ctor: "_Tuple2",_0: loadModel,_1: $Effects.none};
-   var countAlivePlayers = F2(function (activePlayersCount,
+   var getAlivePlayers = F2(function (activePlayersCount,
    playersList) {
       var activePlayersList = A2($List.take,
       activePlayersCount,
       playersList);
-      return $List.length(A2($List.filter,
+      return A2($List.filter,
       function (p) {
          return _U.cmp(p.life,0) > 0;
       },
-      activePlayersList));
+      activePlayersList);
+   });
+   var countAlivePlayers = F2(function (activePlayersCount,
+   playersList) {
+      return $List.length(A2(getAlivePlayers,
+      activePlayersCount,
+      playersList));
    });
    var secondsToTimeStr = function (seconds) {
       var timeToStr = function (t) {
@@ -12008,13 +12014,13 @@ Elm.MTG.make = function (_elm) {
               {life: player.life + _p3._1}) : player;
            };
            var playersList = A2($List.map,setLife,model.players);
-           var alivePlayersCount = A2(countAlivePlayers,
+           var playersAliveCount = A2(countAlivePlayers,
            model.activePlayers,
            playersList);
            return {ctor: "_Tuple2"
                   ,_0: _U.update(model,
                   {players: playersList
-                  ,timeIsRunning: _U.cmp(alivePlayersCount,1) > 0})
+                  ,timeIsRunning: _U.cmp(playersAliveCount,1) > 0})
                   ,_1: $Effects.none};
          case "UpdateNameInput": var setNameEdit = function (player) {
               return _U.eq(player.id,_p3._0) ? _U.update(player,
@@ -12198,6 +12204,19 @@ Elm.MTG.make = function (_elm) {
    var IncreasePlayers = {ctor: "IncreasePlayers"};
    var ResetWins = {ctor: "ResetWins"};
    var ResetGame = {ctor: "ResetGame"};
+   var victoryMessageContainer = F2(function (address,player) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.$class("victory-message-container")]),
+      _U.list([A2($Html.h1,
+              _U.list([]),
+              _U.list([$Html.text(player.name),$Html.text(" WINS!")]))
+              ,A2($Html.div,
+              _U.list([$Html$Attributes.$class("game-option")]),
+              _U.list([A2($Html.button,
+              _U.list([$Html$Attributes.$class("option")
+                      ,A2($Html$Events.onClick,address,ResetGame)]),
+              _U.list([$Html.text("New Game")]))]))]));
+   });
    var StartStopTimer = {ctor: "StartStopTimer"};
    var timerContainer = F2(function (address,model) {
       var startStopBtnTxt = _U.eq(model.timeIsRunning,
@@ -12244,20 +12263,46 @@ Elm.MTG.make = function (_elm) {
                               ,A2($Html$Events.onClick,address,IncreasePlayers)]),
                       _U.list([$Html.text("Add Player")]))]))]));
    });
-   var view = F2(function (address,model) {
+   var gameOverView = F3(function (address,model,player) {
       return A2($Html.div,
+      _U.list([$Html$Attributes.$class("main")]),
+      _U.list([A2($Html.div,
+              _U.list([$Html$Attributes.$class("board shake")]),
+              _U.list([A2(gameOptionsContainer,address,model)
+                      ,A2(playersContainer,
+                      address,
+                      A2($List.take,model.activePlayers,model.players))]))
+              ,A2(victoryMessageContainer,address,player)]));
+   });
+   var defaultView = F2(function (address,model) {
+      return A2($Html.div,
+      _U.list([$Html$Attributes.$class("main")]),
+      _U.list([A2($Html.div,
       _U.list([$Html$Attributes.$class("board")]),
       _U.list([A2(gameOptionsContainer,address,model)
               ,A2(playersContainer,
               address,
-              A2($List.take,model.activePlayers,model.players))]));
+              A2($List.take,model.activePlayers,model.players))]))]));
+   });
+   var view = F2(function (address,model) {
+      var alivePlayers = A2(getAlivePlayers,
+      model.activePlayers,
+      model.players);
+      if (_U.eq($List.length(alivePlayers),1)) {
+            var _p5 = $List.head(alivePlayers);
+            if (_p5.ctor === "Just") {
+                  return A3(gameOverView,address,model,_p5._0);
+               } else {
+                  return A2(defaultView,address,model);
+               }
+         } else return A2(defaultView,address,model);
    });
    var IncrementTimer = {ctor: "IncrementTimer"};
    var app = $StartApp.start({view: view
                              ,update: update
                              ,init: init
                              ,inputs: _U.list([A2($Signal.map,
-                             function (_p5) {
+                             function (_p6) {
                                 return IncrementTimer;
                              },
                              $Time.every($Time.second))])});
@@ -12316,6 +12361,7 @@ Elm.MTG.make = function (_elm) {
                             ,is13: is13
                             ,getNextColor: getNextColor
                             ,secondsToTimeStr: secondsToTimeStr
+                            ,getAlivePlayers: getAlivePlayers
                             ,countAlivePlayers: countAlivePlayers
                             ,newPlayer: newPlayer
                             ,initialModel: initialModel
@@ -12325,6 +12371,9 @@ Elm.MTG.make = function (_elm) {
                             ,nameContainer: nameContainer
                             ,playerBox: playerBox
                             ,playersContainer: playersContainer
+                            ,victoryMessageContainer: victoryMessageContainer
+                            ,gameOverView: gameOverView
+                            ,defaultView: defaultView
                             ,view: view
                             ,loadModel: loadModel
                             ,init: init
