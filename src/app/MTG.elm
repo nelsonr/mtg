@@ -40,6 +40,7 @@ type alias Model =
   , activePlayers : Int
   , currentTime : Int
   , timeIsRunning : Bool
+  , gameOver : Bool
   }
 
 
@@ -50,6 +51,7 @@ type Action
   = NoOp
   | IncrementTimer
   | StartStopTimer
+  | ResetGameOver
   | ResetGame
   | ResetWins
   | IncreasePlayers
@@ -132,19 +134,23 @@ secondsToTimeStr seconds =
     timeToStr(h) ++ ":" ++ timeToStr(m) ++ ":" ++ timeToStr(s)
 
 
-getAlivePlayers : Int -> Players -> Players
-getAlivePlayers activePlayersCount playersList =
+getAlivePlayers : Players -> Int -> Players
+getAlivePlayers playersList activePlayersCount =
   let
-    activePlayersList = List.take activePlayersCount playersList
+    activePlayersList = 
+      List.take activePlayersCount playersList
   in
     activePlayersList
     |> List.filter (\p -> p.life > 0)
 
 
-countAlivePlayers : Int -> Players -> Int
-countAlivePlayers activePlayersCount playersList =
-  List.length (getAlivePlayers activePlayersCount playersList)
-
+isGameOver : Players -> Int -> Bool
+isGameOver playersList activePlayersCount =
+  let
+    alivePlayers = 
+      getAlivePlayers playersList activePlayersCount
+  in
+    List.length alivePlayers == 1
 
 -- INITIAL MODEL --
 
@@ -173,6 +179,7 @@ initialModel =
   , activePlayers = 2
   , currentTime = 0
   , timeIsRunning = False
+  , gameOver = False
   }
 
 
@@ -198,11 +205,20 @@ update action model =
       , Effects.none
       )
 
+    ResetGameOver ->
+      ( { model 
+            | gameOver = False 
+            , timeIsRunning = True
+        }
+      , Effects.none
+      )
+
     ResetGame ->
       ( { model 
             | players = List.map (\player -> { player | life = 20 }) model.players
             , currentTime = 0
             , timeIsRunning = False
+            , gameOver = False
         }
       , Effects.none
       )
@@ -252,12 +268,16 @@ update action model =
           else
             player
 
-        playersList = List.map setLife model.players
-        playersAliveCount = countAlivePlayers model.activePlayers playersList
+        playersList = 
+          List.map setLife model.players
+        
+        gameOver = 
+          isGameOver playersList model.activePlayers
       in
         ( { model 
               | players = playersList
-              , timeIsRunning = playersAliveCount > 1
+              , timeIsRunning = not gameOver
+              , gameOver = gameOver
           }
         , Effects.none
         )
@@ -494,32 +514,47 @@ victoryMessageContainer address player =
             [ class "option"
             , onClick address ResetGame
             ]
-            [ (text "New Game") ] ]
+            [ (text "New Game") ]
+        , button
+            [ class "option btn-sm"
+            , onClick address ResetGameOver
+            ]
+            [ (text "Undo") ]
+        ]
     ]
 
 
-gameOverView : Address Action -> Model -> Player -> Html
-gameOverView address model player =
-  div 
-    [ class "main" ]
-    [ div
-      [ class "board shake" ]
-      [ gameOptionsContainer address model
-      , playersContainer address (List.take model.activePlayers model.players)
+gameOverView : Address Action -> Model -> Html
+gameOverView address model =
+  let
+    alivePlayers = 
+      getAlivePlayers model.players model.activePlayers
+
+    victoryMessageView = 
+      List.map (victoryMessageContainer address) alivePlayers
+  in
+    div 
+      [ class "main" ]
+      [ div
+          [ class "board shake" ]
+          [ gameOptionsContainer address model
+          , playersContainer address (List.take model.activePlayers model.players)
+          ]
+      , div 
+          [ class "victory-container" ]
+          victoryMessageView
       ]
-    , victoryMessageContainer address player
-    ]
 
 
 defaultView : Address Action -> Model -> Html
 defaultView address model =
   div 
-    [class "main" ]
+    [ class "main" ]
     [ div
-      [ class "board" ]
-      [ gameOptionsContainer address model
-      , playersContainer address (List.take model.activePlayers model.players)
-      ]
+        [ class "board" ]
+        [ gameOptionsContainer address model
+        , playersContainer address (List.take model.activePlayers model.players)
+        ]
     ]
 
 
@@ -528,18 +563,11 @@ defaultView address model =
 
 view : Address Action -> Model -> Html
 view address model =
-  let
-    alivePlayers = getAlivePlayers model.activePlayers model.players
-  in
-    if List.length alivePlayers == 1 then
-      case List.head alivePlayers of
-        Just player ->
-          gameOverView address model player
-
-        Nothing ->
-          defaultView address model
-    else
-      defaultView address model
+  if model.gameOver then
+    gameOverView address model
+  else
+    defaultView address model
+    
 
 -- INIT --
 

@@ -10,41 +10,7 @@
 </head>
 <body>
   <main>
-    <div id="app">
-      <div class="players-container">
-          <!-- Start player example -->
-          <!-- <div class="player green">
-              <div class="name-container">
-                  <div class="name">Player 1</div>
-              </div>
-              
-              <div class="life-container">
-                  <div class="life">20</div>
-              </div>
-      
-              <div class="options-container">
-                  <div class="options-row">
-                      <div class="option option-plus-one">
-                          <button>+1</button>
-                      </div>
-                      <div class="option option-plus-five">
-                          <button>+5</button>
-                      </div>
-                  </div>
-      
-                  <div class="options-row">
-                      <div class="option option-minus-one">
-                          <button>-1</button>
-                      </div>
-                      <div class="option option-minus-five">
-                          <button>-5</button>
-                      </div>
-                  </div>
-              </div>
-          </div> -->
-          <!-- End player example -->
-      </div>
-    </div>
+    <div id="app"><!-- App loads here --></div>
   </main>
 
   <script type="text/javascript">
@@ -73,6 +39,10 @@
 
       if (startingState.timeIsRunning == undefined) {
         startingState.timeIsRunning = false;
+      }
+
+      if (startingState.gameOver == undefined) {
+        startingState.gameOver = false;
       }
     }
 

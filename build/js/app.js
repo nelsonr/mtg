@@ -11837,32 +11837,34 @@ Elm.MTG.make = function (_elm) {
    var getStorage = Elm.Native.Port.make(_elm).inbound("getStorage",
    "Maybe.Maybe MTG.Model",
    function (v) {
-      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "players" in v && "activePlayers" in v && "currentTime" in v && "timeIsRunning" in v ? {_: {}
-                                                                                                                                                                                                   ,players: typeof v.players === "object" && v.players instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.players.map(function (v) {
-                                                                                                                                                                                                      return typeof v === "object" && "id" in v && "name" in v && "color" in v && "life" in v && "edit" in v && "nameEdit" in v && "wins" in v ? {_: {}
-                                                                                                                                                                                                                                                                                                                                                 ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                 v.id)
-                                                                                                                                                                                                                                                                                                                                                 ,name: typeof v.name === "string" || typeof v.name === "object" && v.name instanceof String ? v.name : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                 v.name)
-                                                                                                                                                                                                                                                                                                                                                 ,color: typeof v.color === "string" || typeof v.color === "object" && v.color instanceof String ? v.color : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                 v.color)
-                                                                                                                                                                                                                                                                                                                                                 ,life: typeof v.life === "number" && isFinite(v.life) && Math.floor(v.life) === v.life ? v.life : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                 v.life)
-                                                                                                                                                                                                                                                                                                                                                 ,edit: typeof v.edit === "boolean" ? v.edit : _U.badPort("a boolean (true or false)",
-                                                                                                                                                                                                                                                                                                                                                 v.edit)
-                                                                                                                                                                                                                                                                                                                                                 ,nameEdit: typeof v.nameEdit === "string" || typeof v.nameEdit === "object" && v.nameEdit instanceof String ? v.nameEdit : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                 v.nameEdit)
-                                                                                                                                                                                                                                                                                                                                                 ,wins: typeof v.wins === "number" && isFinite(v.wins) && Math.floor(v.wins) === v.wins ? v.wins : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                 v.wins)} : _U.badPort("an object with fields `id`, `name`, `color`, `life`, `edit`, `nameEdit`, `wins`",
-                                                                                                                                                                                                      v);
-                                                                                                                                                                                                   })) : _U.badPort("an array",
-                                                                                                                                                                                                   v.players)
-                                                                                                                                                                                                   ,activePlayers: typeof v.activePlayers === "number" && isFinite(v.activePlayers) && Math.floor(v.activePlayers) === v.activePlayers ? v.activePlayers : _U.badPort("an integer",
-                                                                                                                                                                                                   v.activePlayers)
-                                                                                                                                                                                                   ,currentTime: typeof v.currentTime === "number" && isFinite(v.currentTime) && Math.floor(v.currentTime) === v.currentTime ? v.currentTime : _U.badPort("an integer",
-                                                                                                                                                                                                   v.currentTime)
-                                                                                                                                                                                                   ,timeIsRunning: typeof v.timeIsRunning === "boolean" ? v.timeIsRunning : _U.badPort("a boolean (true or false)",
-                                                                                                                                                                                                   v.timeIsRunning)} : _U.badPort("an object with fields `players`, `activePlayers`, `currentTime`, `timeIsRunning`",
+      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "players" in v && "activePlayers" in v && "currentTime" in v && "timeIsRunning" in v && "gameOver" in v ? {_: {}
+                                                                                                                                                                                                                      ,players: typeof v.players === "object" && v.players instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.players.map(function (v) {
+                                                                                                                                                                                                                         return typeof v === "object" && "id" in v && "name" in v && "color" in v && "life" in v && "edit" in v && "nameEdit" in v && "wins" in v ? {_: {}
+                                                                                                                                                                                                                                                                                                                                                                    ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                    v.id)
+                                                                                                                                                                                                                                                                                                                                                                    ,name: typeof v.name === "string" || typeof v.name === "object" && v.name instanceof String ? v.name : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                    v.name)
+                                                                                                                                                                                                                                                                                                                                                                    ,color: typeof v.color === "string" || typeof v.color === "object" && v.color instanceof String ? v.color : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                    v.color)
+                                                                                                                                                                                                                                                                                                                                                                    ,life: typeof v.life === "number" && isFinite(v.life) && Math.floor(v.life) === v.life ? v.life : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                    v.life)
+                                                                                                                                                                                                                                                                                                                                                                    ,edit: typeof v.edit === "boolean" ? v.edit : _U.badPort("a boolean (true or false)",
+                                                                                                                                                                                                                                                                                                                                                                    v.edit)
+                                                                                                                                                                                                                                                                                                                                                                    ,nameEdit: typeof v.nameEdit === "string" || typeof v.nameEdit === "object" && v.nameEdit instanceof String ? v.nameEdit : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                    v.nameEdit)
+                                                                                                                                                                                                                                                                                                                                                                    ,wins: typeof v.wins === "number" && isFinite(v.wins) && Math.floor(v.wins) === v.wins ? v.wins : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                    v.wins)} : _U.badPort("an object with fields `id`, `name`, `color`, `life`, `edit`, `nameEdit`, `wins`",
+                                                                                                                                                                                                                         v);
+                                                                                                                                                                                                                      })) : _U.badPort("an array",
+                                                                                                                                                                                                                      v.players)
+                                                                                                                                                                                                                      ,activePlayers: typeof v.activePlayers === "number" && isFinite(v.activePlayers) && Math.floor(v.activePlayers) === v.activePlayers ? v.activePlayers : _U.badPort("an integer",
+                                                                                                                                                                                                                      v.activePlayers)
+                                                                                                                                                                                                                      ,currentTime: typeof v.currentTime === "number" && isFinite(v.currentTime) && Math.floor(v.currentTime) === v.currentTime ? v.currentTime : _U.badPort("an integer",
+                                                                                                                                                                                                                      v.currentTime)
+                                                                                                                                                                                                                      ,timeIsRunning: typeof v.timeIsRunning === "boolean" ? v.timeIsRunning : _U.badPort("a boolean (true or false)",
+                                                                                                                                                                                                                      v.timeIsRunning)
+                                                                                                                                                                                                                      ,gameOver: typeof v.gameOver === "boolean" ? v.gameOver : _U.badPort("a boolean (true or false)",
+                                                                                                                                                                                                                      v.gameOver)} : _U.badPort("an object with fields `players`, `activePlayers`, `currentTime`, `timeIsRunning`, `gameOver`",
       v));
    });
    var newPlayer = F3(function (id,name,color) {
@@ -11884,11 +11886,12 @@ Elm.MTG.make = function (_elm) {
                                         ,A3(newPlayer,5,"Player 5","white")])
                       ,activePlayers: 2
                       ,currentTime: 0
-                      ,timeIsRunning: false};
+                      ,timeIsRunning: false
+                      ,gameOver: false};
    var loadModel = A2($Maybe.withDefault,initialModel,getStorage);
    var init = {ctor: "_Tuple2",_0: loadModel,_1: $Effects.none};
-   var getAlivePlayers = F2(function (activePlayersCount,
-   playersList) {
+   var getAlivePlayers = F2(function (playersList,
+   activePlayersCount) {
       var activePlayersList = A2($List.take,
       activePlayersCount,
       playersList);
@@ -11898,11 +11901,11 @@ Elm.MTG.make = function (_elm) {
       },
       activePlayersList);
    });
-   var countAlivePlayers = F2(function (activePlayersCount,
-   playersList) {
-      return $List.length(A2(getAlivePlayers,
-      activePlayersCount,
-      playersList));
+   var isGameOver = F2(function (playersList,activePlayersCount) {
+      var alivePlayers = A2(getAlivePlayers,
+      playersList,
+      activePlayersCount);
+      return _U.eq($List.length(alivePlayers),1);
    });
    var secondsToTimeStr = function (seconds) {
       var timeToStr = function (t) {
@@ -11971,6 +11974,9 @@ Elm.MTG.make = function (_elm) {
                                        ,_0: _U.update(model,
                                        {timeIsRunning: $Basics.not(model.timeIsRunning)})
                                        ,_1: $Effects.none};
+         case "ResetGameOver": return {ctor: "_Tuple2"
+                                      ,_0: _U.update(model,{gameOver: false,timeIsRunning: true})
+                                      ,_1: $Effects.none};
          case "ResetGame": return {ctor: "_Tuple2"
                                   ,_0: _U.update(model,
                                   {players: A2($List.map,
@@ -11979,7 +11985,8 @@ Elm.MTG.make = function (_elm) {
                                   },
                                   model.players)
                                   ,currentTime: 0
-                                  ,timeIsRunning: false})
+                                  ,timeIsRunning: false
+                                  ,gameOver: false})
                                   ,_1: $Effects.none};
          case "ResetWins": return {ctor: "_Tuple2"
                                   ,_0: _U.update(model,
@@ -12014,13 +12021,12 @@ Elm.MTG.make = function (_elm) {
               {life: player.life + _p3._1}) : player;
            };
            var playersList = A2($List.map,setLife,model.players);
-           var playersAliveCount = A2(countAlivePlayers,
-           model.activePlayers,
-           playersList);
+           var gameOver = A2(isGameOver,playersList,model.activePlayers);
            return {ctor: "_Tuple2"
                   ,_0: _U.update(model,
                   {players: playersList
-                  ,timeIsRunning: _U.cmp(playersAliveCount,1) > 0})
+                  ,timeIsRunning: $Basics.not(gameOver)
+                  ,gameOver: gameOver})
                   ,_1: $Effects.none};
          case "UpdateNameInput": var setNameEdit = function (player) {
               return _U.eq(player.id,_p3._0) ? _U.update(player,
@@ -12204,6 +12210,7 @@ Elm.MTG.make = function (_elm) {
    var IncreasePlayers = {ctor: "IncreasePlayers"};
    var ResetWins = {ctor: "ResetWins"};
    var ResetGame = {ctor: "ResetGame"};
+   var ResetGameOver = {ctor: "ResetGameOver"};
    var victoryMessageContainer = F2(function (address,player) {
       return A2($Html.div,
       _U.list([$Html$Attributes.$class("victory-message-container")]),
@@ -12213,9 +12220,13 @@ Elm.MTG.make = function (_elm) {
               ,A2($Html.div,
               _U.list([$Html$Attributes.$class("game-option")]),
               _U.list([A2($Html.button,
-              _U.list([$Html$Attributes.$class("option")
-                      ,A2($Html$Events.onClick,address,ResetGame)]),
-              _U.list([$Html.text("New Game")]))]))]));
+                      _U.list([$Html$Attributes.$class("option")
+                              ,A2($Html$Events.onClick,address,ResetGame)]),
+                      _U.list([$Html.text("New Game")]))
+                      ,A2($Html.button,
+                      _U.list([$Html$Attributes.$class("option btn-sm")
+                              ,A2($Html$Events.onClick,address,ResetGameOver)]),
+                      _U.list([$Html.text("Undo")]))]))]));
    });
    var StartStopTimer = {ctor: "StartStopTimer"};
    var timerContainer = F2(function (address,model) {
@@ -12263,7 +12274,13 @@ Elm.MTG.make = function (_elm) {
                               ,A2($Html$Events.onClick,address,IncreasePlayers)]),
                       _U.list([$Html.text("Add Player")]))]))]));
    });
-   var gameOverView = F3(function (address,model,player) {
+   var gameOverView = F2(function (address,model) {
+      var alivePlayers = A2(getAlivePlayers,
+      model.players,
+      model.activePlayers);
+      var victoryMessageView = A2($List.map,
+      victoryMessageContainer(address),
+      alivePlayers);
       return A2($Html.div,
       _U.list([$Html$Attributes.$class("main")]),
       _U.list([A2($Html.div,
@@ -12272,7 +12289,9 @@ Elm.MTG.make = function (_elm) {
                       ,A2(playersContainer,
                       address,
                       A2($List.take,model.activePlayers,model.players))]))
-              ,A2(victoryMessageContainer,address,player)]));
+              ,A2($Html.div,
+              _U.list([$Html$Attributes.$class("victory-container")]),
+              victoryMessageView)]));
    });
    var defaultView = F2(function (address,model) {
       return A2($Html.div,
@@ -12285,24 +12304,16 @@ Elm.MTG.make = function (_elm) {
               A2($List.take,model.activePlayers,model.players))]))]));
    });
    var view = F2(function (address,model) {
-      var alivePlayers = A2(getAlivePlayers,
-      model.activePlayers,
-      model.players);
-      if (_U.eq($List.length(alivePlayers),1)) {
-            var _p5 = $List.head(alivePlayers);
-            if (_p5.ctor === "Just") {
-                  return A3(gameOverView,address,model,_p5._0);
-               } else {
-                  return A2(defaultView,address,model);
-               }
-         } else return A2(defaultView,address,model);
+      return model.gameOver ? A2(gameOverView,
+      address,
+      model) : A2(defaultView,address,model);
    });
    var IncrementTimer = {ctor: "IncrementTimer"};
    var app = $StartApp.start({view: view
                              ,update: update
                              ,init: init
                              ,inputs: _U.list([A2($Signal.map,
-                             function (_p6) {
+                             function (_p5) {
                                 return IncrementTimer;
                              },
                              $Time.every($Time.second))])});
@@ -12319,16 +12330,18 @@ Elm.MTG.make = function (_elm) {
              })
              ,activePlayers: v.activePlayers
              ,currentTime: v.currentTime
-             ,timeIsRunning: v.timeIsRunning};
+             ,timeIsRunning: v.timeIsRunning
+             ,gameOver: v.gameOver};
    },
    app.model);
    var main = app.html;
    var NoOp = {ctor: "NoOp"};
-   var Model = F4(function (a,b,c,d) {
+   var Model = F5(function (a,b,c,d,e) {
       return {players: a
              ,activePlayers: b
              ,currentTime: c
-             ,timeIsRunning: d};
+             ,timeIsRunning: d
+             ,gameOver: e};
    });
    var Player = F7(function (a,b,c,d,e,f,g) {
       return {id: a
@@ -12345,6 +12358,7 @@ Elm.MTG.make = function (_elm) {
                             ,NoOp: NoOp
                             ,IncrementTimer: IncrementTimer
                             ,StartStopTimer: StartStopTimer
+                            ,ResetGameOver: ResetGameOver
                             ,ResetGame: ResetGame
                             ,ResetWins: ResetWins
                             ,IncreasePlayers: IncreasePlayers
@@ -12362,7 +12376,7 @@ Elm.MTG.make = function (_elm) {
                             ,getNextColor: getNextColor
                             ,secondsToTimeStr: secondsToTimeStr
                             ,getAlivePlayers: getAlivePlayers
-                            ,countAlivePlayers: countAlivePlayers
+                            ,isGameOver: isGameOver
                             ,newPlayer: newPlayer
                             ,initialModel: initialModel
                             ,update: update

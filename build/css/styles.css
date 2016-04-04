@@ -172,7 +172,7 @@ main, #app { height: 100%; }
 
 .board { background-image: url("../images/bg.png"); background-position: center; background-attachment: fixed; background-size: cover; height: 100%; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -webkit-flex-direction: column; -ms-flex-direction: column; flex-direction: column; position: relative; }
 
-.board.shake { -webkit-animation: shake 150ms; animation: shake 150ms; -webkit-animation-delay: 546ms; animation-delay: 546ms; }
+.board.shake { -webkit-animation: shake 150ms; animation: shake 150ms; -webkit-animation-delay: 600ms; animation-delay: 600ms; }
 
 .game-options-container { padding: 0.5em 1em; display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; -webkit-justify-content: space-around; -ms-flex-pack: distribute; justify-content: space-around; position: relative; top: 1em; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
 
