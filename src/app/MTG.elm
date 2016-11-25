@@ -25,6 +25,7 @@ type alias Player =
   , edit : Bool
   , nameEdit : String
   , wins : Int
+  , energy : Int
   }
 
 
@@ -63,6 +64,8 @@ type Action
   | SaveNameInput Id
   | IncreaseWins Id
   | DecreaseWins Id
+  | IncreaseEnergy Id
+  | DecreaseEnergy Id
 
 
 -- HELPER FUNCTIONS --
@@ -124,7 +127,7 @@ secondsToTimeStr seconds =
     h = floor(secs / 3600)
     m = floor((secs - toFloat(h * 3600)) / 60)
     s = floor(secs - toFloat(h * 3600) - toFloat(m * 60))
-    
+
     timeToStr t =
       if t < 10 then
         "0" ++ toString(t)
@@ -137,7 +140,7 @@ secondsToTimeStr seconds =
 getAlivePlayers : Players -> Int -> Players
 getAlivePlayers playersList activePlayersCount =
   let
-    activePlayersList = 
+    activePlayersList =
       List.take activePlayersCount playersList
   in
     activePlayersList
@@ -147,7 +150,7 @@ getAlivePlayers playersList activePlayersCount =
 isGameOver : Players -> Int -> Bool
 isGameOver playersList activePlayersCount =
   let
-    alivePlayers = 
+    alivePlayers =
       getAlivePlayers playersList activePlayersCount
   in
     List.length alivePlayers == 1
@@ -164,6 +167,7 @@ newPlayer id name color =
   , edit = False
   , nameEdit = name
   , wins = 0
+  , energy = 0
   }
 
 
@@ -206,16 +210,16 @@ update action model =
       )
 
     ResetGameOver ->
-      ( { model 
-            | gameOver = False 
+      ( { model
+            | gameOver = False
             , timeIsRunning = True
         }
       , Effects.none
       )
 
     ResetGame ->
-      ( { model 
-            | players = List.map (\player -> { player | life = 20 }) model.players
+      ( { model
+            | players = List.map (\player -> { player | life = 20, energy = 0 }) model.players
             , currentTime = 0
             , timeIsRunning = False
             , gameOver = False
@@ -268,13 +272,13 @@ update action model =
           else
             player
 
-        playersList = 
+        playersList =
           List.map setLife model.players
-        
-        gameOver = 
+
+        gameOver =
           isGameOver playersList model.activePlayers
       in
-        ( { model 
+        ( { model
               | players = playersList
               , timeIsRunning = not gameOver
               , gameOver = gameOver
@@ -342,6 +346,30 @@ update action model =
         , Effects.none
         )
 
+    IncreaseEnergy id ->
+      let
+        addEnergy player =
+          if player.id == id then
+            { player | energy = player.energy + 1 }
+          else
+            player
+      in
+        ( { model | players = List.map addEnergy model.players }
+        , Effects.none
+        )
+
+    DecreaseEnergy id ->
+      let
+        removeEnergy player =
+          if player.id == id && player.energy > 0 then
+            { player | energy = player.energy - 1 }
+          else
+            player
+      in
+        ( { model | players = List.map removeEnergy model.players }
+        , Effects.none
+        )
+
 
 -- VIEWS --
 
@@ -356,9 +384,9 @@ timerContainer address model =
         "Start"
   in
     div
-      [ classList 
+      [ classList
           [ ("timer-container", True)
-          , ("running", model.timeIsRunning) 
+          , ("running", model.timeIsRunning)
           ]
       ]
       [ div
@@ -448,15 +476,29 @@ playerBox address player =
         [ class "life-container", onClick address (CyclePlayerColor player.id) ]
         [ div [ class "life" ] [ text (toString player.life) ] ]
     , div
-        [ class "wins-container" ]
-        [ button
-            [ class "minus-win"
-            , onClick address (DecreaseWins player.id)
-            , disabled (player.wins < 1)
-            ]
-            [ (text "-") ]
-        , div [ class "wins" ] [ text (toString player.wins) ]
-        , button [ class "plus-win", onClick address (IncreaseWins player.id) ] [ (text "+") ]
+        [ class "counters-container" ]
+        [ div
+          [ class "energy-container" ]
+          [ button
+              [ class "minus-win"
+              , onClick address (DecreaseEnergy player.id)
+              , disabled (player.energy < 1)
+              ]
+              [ (text "-") ]
+          , div [ class "energy" ] [ text (toString player.energy) ]
+          , button [ class "plus-win", onClick address (IncreaseEnergy player.id) ] [ (text "+") ]
+          ]
+        , div
+          [ class "wins-container" ]
+          [ button
+              [ class "minus-win"
+              , onClick address (DecreaseWins player.id)
+              , disabled (player.wins < 1)
+              ]
+              [ (text "-") ]
+          , div [ class "wins" ] [ text (toString player.wins) ]
+          , button [ class "plus-win", onClick address (IncreaseWins player.id) ] [ (text "+") ]
+          ]
         ]
     , div
         [ class "options-container" ]
@@ -503,10 +545,10 @@ victoryMessageContainer : Address Action -> Player -> Html
 victoryMessageContainer address player =
   div
     [ class "victory-message-container" ]
-    [ h1 
-        [] 
+    [ h1
+        []
         [ (text player.name)
-        , (text " WINS!") 
+        , (text " WINS!")
         ]
     , div
         [ class "game-option" ]
@@ -527,20 +569,20 @@ victoryMessageContainer address player =
 gameOverView : Address Action -> Model -> Html
 gameOverView address model =
   let
-    alivePlayers = 
+    alivePlayers =
       getAlivePlayers model.players model.activePlayers
 
-    victoryMessageView = 
+    victoryMessageView =
       List.map (victoryMessageContainer address) alivePlayers
   in
-    div 
+    div
       [ class "main" ]
       [ div
           [ class "board shake" ]
           [ gameOptionsContainer address model
           , playersContainer address (List.take model.activePlayers model.players)
           ]
-      , div 
+      , div
           [ class "victory-container" ]
           victoryMessageView
       ]
@@ -548,7 +590,7 @@ gameOverView address model =
 
 defaultView : Address Action -> Model -> Html
 defaultView address model =
-  div 
+  div
     [ class "main" ]
     [ div
         [ class "board" ]
@@ -567,7 +609,7 @@ view address model =
     gameOverView address model
   else
     defaultView address model
-    
+
 
 -- INIT --
 
