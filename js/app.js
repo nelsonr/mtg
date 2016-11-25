@@ -11839,21 +11839,23 @@ Elm.MTG.make = function (_elm) {
    function (v) {
       return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "players" in v && "activePlayers" in v && "currentTime" in v && "timeIsRunning" in v && "gameOver" in v ? {_: {}
                                                                                                                                                                                                                       ,players: typeof v.players === "object" && v.players instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.players.map(function (v) {
-                                                                                                                                                                                                                         return typeof v === "object" && "id" in v && "name" in v && "color" in v && "life" in v && "edit" in v && "nameEdit" in v && "wins" in v ? {_: {}
-                                                                                                                                                                                                                                                                                                                                                                    ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                                    v.id)
-                                                                                                                                                                                                                                                                                                                                                                    ,name: typeof v.name === "string" || typeof v.name === "object" && v.name instanceof String ? v.name : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                                    v.name)
-                                                                                                                                                                                                                                                                                                                                                                    ,color: typeof v.color === "string" || typeof v.color === "object" && v.color instanceof String ? v.color : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                                    v.color)
-                                                                                                                                                                                                                                                                                                                                                                    ,life: typeof v.life === "number" && isFinite(v.life) && Math.floor(v.life) === v.life ? v.life : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                                    v.life)
-                                                                                                                                                                                                                                                                                                                                                                    ,edit: typeof v.edit === "boolean" ? v.edit : _U.badPort("a boolean (true or false)",
-                                                                                                                                                                                                                                                                                                                                                                    v.edit)
-                                                                                                                                                                                                                                                                                                                                                                    ,nameEdit: typeof v.nameEdit === "string" || typeof v.nameEdit === "object" && v.nameEdit instanceof String ? v.nameEdit : _U.badPort("a string",
-                                                                                                                                                                                                                                                                                                                                                                    v.nameEdit)
-                                                                                                                                                                                                                                                                                                                                                                    ,wins: typeof v.wins === "number" && isFinite(v.wins) && Math.floor(v.wins) === v.wins ? v.wins : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                                                                                                                    v.wins)} : _U.badPort("an object with fields `id`, `name`, `color`, `life`, `edit`, `nameEdit`, `wins`",
+                                                                                                                                                                                                                         return typeof v === "object" && "id" in v && "name" in v && "color" in v && "life" in v && "edit" in v && "nameEdit" in v && "wins" in v && "energy" in v ? {_: {}
+                                                                                                                                                                                                                                                                                                                                                                                     ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                     v.id)
+                                                                                                                                                                                                                                                                                                                                                                                     ,name: typeof v.name === "string" || typeof v.name === "object" && v.name instanceof String ? v.name : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                                     v.name)
+                                                                                                                                                                                                                                                                                                                                                                                     ,color: typeof v.color === "string" || typeof v.color === "object" && v.color instanceof String ? v.color : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                                     v.color)
+                                                                                                                                                                                                                                                                                                                                                                                     ,life: typeof v.life === "number" && isFinite(v.life) && Math.floor(v.life) === v.life ? v.life : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                     v.life)
+                                                                                                                                                                                                                                                                                                                                                                                     ,edit: typeof v.edit === "boolean" ? v.edit : _U.badPort("a boolean (true or false)",
+                                                                                                                                                                                                                                                                                                                                                                                     v.edit)
+                                                                                                                                                                                                                                                                                                                                                                                     ,nameEdit: typeof v.nameEdit === "string" || typeof v.nameEdit === "object" && v.nameEdit instanceof String ? v.nameEdit : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                                     v.nameEdit)
+                                                                                                                                                                                                                                                                                                                                                                                     ,wins: typeof v.wins === "number" && isFinite(v.wins) && Math.floor(v.wins) === v.wins ? v.wins : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                     v.wins)
+                                                                                                                                                                                                                                                                                                                                                                                     ,energy: typeof v.energy === "number" && isFinite(v.energy) && Math.floor(v.energy) === v.energy ? v.energy : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                     v.energy)} : _U.badPort("an object with fields `id`, `name`, `color`, `life`, `edit`, `nameEdit`, `wins`, `energy`",
                                                                                                                                                                                                                          v);
                                                                                                                                                                                                                       })) : _U.badPort("an array",
                                                                                                                                                                                                                       v.players)
@@ -11874,7 +11876,8 @@ Elm.MTG.make = function (_elm) {
              ,life: 20
              ,edit: false
              ,nameEdit: name
-             ,wins: 0};
+             ,wins: 0
+             ,energy: 0};
    });
    var initialModel = {players: _U.list([A3(newPlayer,
                                         1,
@@ -11981,7 +11984,7 @@ Elm.MTG.make = function (_elm) {
                                   ,_0: _U.update(model,
                                   {players: A2($List.map,
                                   function (player) {
-                                     return _U.update(player,{life: 20});
+                                     return _U.update(player,{life: 20,energy: 0});
                                   },
                                   model.players)
                                   ,currentTime: 0
@@ -12061,13 +12064,29 @@ Elm.MTG.make = function (_elm) {
                   ,_0: _U.update(model,
                   {players: A2($List.map,addWin,model.players)})
                   ,_1: $Effects.none};
-         default: var removeWin = function (player) {
+         case "DecreaseWins": var removeWin = function (player) {
               return _U.eq(player.id,_p3._0) && _U.cmp(player.wins,
               0) > 0 ? _U.update(player,{wins: player.wins - 1}) : player;
            };
            return {ctor: "_Tuple2"
                   ,_0: _U.update(model,
                   {players: A2($List.map,removeWin,model.players)})
+                  ,_1: $Effects.none};
+         case "IncreaseEnergy": var addEnergy = function (player) {
+              return _U.eq(player.id,_p3._0) ? _U.update(player,
+              {energy: player.energy + 1}) : player;
+           };
+           return {ctor: "_Tuple2"
+                  ,_0: _U.update(model,
+                  {players: A2($List.map,addEnergy,model.players)})
+                  ,_1: $Effects.none};
+         default: var removeEnergy = function (player) {
+              return _U.eq(player.id,_p3._0) && _U.cmp(player.energy,
+              0) > 0 ? _U.update(player,{energy: player.energy - 1}) : player;
+           };
+           return {ctor: "_Tuple2"
+                  ,_0: _U.update(model,
+                  {players: A2($List.map,removeEnergy,model.players)})
                   ,_1: $Effects.none};}
    });
    var is13 = function (code) {
@@ -12090,6 +12109,12 @@ Elm.MTG.make = function (_elm) {
          return A2($Signal.message,address,f(v));
       });
    });
+   var DecreaseEnergy = function (a) {
+      return {ctor: "DecreaseEnergy",_0: a};
+   };
+   var IncreaseEnergy = function (a) {
+      return {ctor: "IncreaseEnergy",_0: a};
+   };
    var DecreaseWins = function (a) {
       return {ctor: "DecreaseWins",_0: a};
    };
@@ -12151,19 +12176,35 @@ Elm.MTG.make = function (_elm) {
               _U.list([$Html$Attributes.$class("life")]),
               _U.list([$Html.text($Basics.toString(player.life))]))]))
               ,A2($Html.div,
-              _U.list([$Html$Attributes.$class("wins-container")]),
-              _U.list([A2($Html.button,
-                      _U.list([$Html$Attributes.$class("minus-win")
-                              ,A2($Html$Events.onClick,address,DecreaseWins(player.id))
-                              ,$Html$Attributes.disabled(_U.cmp(player.wins,1) < 0)]),
-                      _U.list([$Html.text("-")]))
+              _U.list([$Html$Attributes.$class("counters-container")]),
+              _U.list([A2($Html.div,
+                      _U.list([$Html$Attributes.$class("energy-container")]),
+                      _U.list([A2($Html.button,
+                              _U.list([$Html$Attributes.$class("minus-win")
+                                      ,A2($Html$Events.onClick,address,DecreaseEnergy(player.id))
+                                      ,$Html$Attributes.disabled(_U.cmp(player.energy,1) < 0)]),
+                              _U.list([$Html.text("-")]))
+                              ,A2($Html.div,
+                              _U.list([$Html$Attributes.$class("energy")]),
+                              _U.list([$Html.text($Basics.toString(player.energy))]))
+                              ,A2($Html.button,
+                              _U.list([$Html$Attributes.$class("plus-win")
+                                      ,A2($Html$Events.onClick,address,IncreaseEnergy(player.id))]),
+                              _U.list([$Html.text("+")]))]))
                       ,A2($Html.div,
-                      _U.list([$Html$Attributes.$class("wins")]),
-                      _U.list([$Html.text($Basics.toString(player.wins))]))
-                      ,A2($Html.button,
-                      _U.list([$Html$Attributes.$class("plus-win")
-                              ,A2($Html$Events.onClick,address,IncreaseWins(player.id))]),
-                      _U.list([$Html.text("+")]))]))
+                      _U.list([$Html$Attributes.$class("wins-container")]),
+                      _U.list([A2($Html.button,
+                              _U.list([$Html$Attributes.$class("minus-win")
+                                      ,A2($Html$Events.onClick,address,DecreaseWins(player.id))
+                                      ,$Html$Attributes.disabled(_U.cmp(player.wins,1) < 0)]),
+                              _U.list([$Html.text("-")]))
+                              ,A2($Html.div,
+                              _U.list([$Html$Attributes.$class("wins")]),
+                              _U.list([$Html.text($Basics.toString(player.wins))]))
+                              ,A2($Html.button,
+                              _U.list([$Html$Attributes.$class("plus-win")
+                                      ,A2($Html$Events.onClick,address,IncreaseWins(player.id))]),
+                              _U.list([$Html.text("+")]))]))]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.$class("options-container")]),
               _U.list([A2($Html.div,
@@ -12326,7 +12367,8 @@ Elm.MTG.make = function (_elm) {
                        ,life: v.life
                        ,edit: v.edit
                        ,nameEdit: v.nameEdit
-                       ,wins: v.wins};
+                       ,wins: v.wins
+                       ,energy: v.energy};
              })
              ,activePlayers: v.activePlayers
              ,currentTime: v.currentTime
@@ -12343,14 +12385,15 @@ Elm.MTG.make = function (_elm) {
              ,timeIsRunning: d
              ,gameOver: e};
    });
-   var Player = F7(function (a,b,c,d,e,f,g) {
+   var Player = F8(function (a,b,c,d,e,f,g,h) {
       return {id: a
              ,name: b
              ,color: c
              ,life: d
              ,edit: e
              ,nameEdit: f
-             ,wins: g};
+             ,wins: g
+             ,energy: h};
    });
    return _elm.MTG.values = {_op: _op
                             ,Player: Player
@@ -12370,6 +12413,8 @@ Elm.MTG.make = function (_elm) {
                             ,SaveNameInput: SaveNameInput
                             ,IncreaseWins: IncreaseWins
                             ,DecreaseWins: DecreaseWins
+                            ,IncreaseEnergy: IncreaseEnergy
+                            ,DecreaseEnergy: DecreaseEnergy
                             ,onInput: onInput
                             ,onEnter: onEnter
                             ,is13: is13

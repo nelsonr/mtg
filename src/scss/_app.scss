@@ -23,10 +23,10 @@ main, #app {
 @mixin button-3d($color) {
   background-color: $color;
   text-shadow: 0 -1px desaturate(darken($color, 20%), 50%);
-  box-shadow: 0 -1px saturate(lighten($color, 24%), 10%), 
+  box-shadow: 0 -1px saturate(lighten($color, 24%), 10%),
               0 2px 4px rgba(0, 0, 0, 0.5),
               0 2px desaturate(darken($color, 23%), 50%);
-  
+
   &:active {
     box-shadow: none;
     position: relative;
@@ -49,7 +49,7 @@ main, #app {
       color: $color;
     }
 
-    .wins-container {
+    .energy-container, .wins-container {
       button {
         @include button-3d($color);
 
@@ -160,7 +160,7 @@ main, #app {
   }
 
   .timer + button {
-    display: inline-block;    
+    display: inline-block;
     width: 54px;
   }
 }
@@ -285,7 +285,7 @@ main, #app {
       justify-content: center;
       align-items: center;
       cursor: default;
-      
+
       @include no-text-selection();
 
       .life {
@@ -294,7 +294,12 @@ main, #app {
       }
     }
 
-    .wins-container {
+    .counters-container {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .energy-container, .wins-container {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -329,6 +334,20 @@ main, #app {
           opacity: 1;
         }
       }
+    }
+
+    .energy-container .energy {
+      width: 22px;
+      height: 22px;
+      background: url('../images/energy_symbol.png') no-repeat left center;
+      background-size: 22px;
+      padding-left: 23px;
+      line-height: 22px;
+      margin-left: 4px;
+      margin-right: 4px;
+      text-align: center;
+      font-size: 1.3em;
+      color: #FFF;
     }
 
     .options-container {

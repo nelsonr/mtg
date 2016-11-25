@@ -43,6 +43,13 @@
         });
       }
 
+      if (startingState.players[0].energy == undefined) {
+        startingState.players = startingState.players.map(function(el) {
+          el.energy = 0;
+          return el;
+        });
+      }
+
       if (startingState.currentTime == undefined) {
         startingState.currentTime = 0;
       }
