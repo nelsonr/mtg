@@ -11826,7 +11826,6 @@ Elm.MTG.make = function (_elm) {
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -12089,18 +12088,6 @@ Elm.MTG.make = function (_elm) {
                   {players: A2($List.map,removeEnergy,model.players)})
                   ,_1: $Effects.none};}
    });
-   var is13 = function (code) {
-      return _U.eq(code,
-      13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");
-   };
-   var onEnter = F2(function (address,value) {
-      return A3($Html$Events.on,
-      "keydown",
-      A2($Json$Decode.customDecoder,$Html$Events.keyCode,is13),
-      function (_p4) {
-         return A2($Signal.message,address,value);
-      });
-   });
    var onInput = F2(function (address,f) {
       return A3($Html$Events.on,
       "input",
@@ -12133,16 +12120,17 @@ Elm.MTG.make = function (_elm) {
    var nameContainer = F2(function (address,player) {
       return player.edit ? A2($Html.div,
       _U.list([$Html$Attributes.$class("name-container")]),
-      _U.list([A2($Html.div,
-      _U.list([$Html$Attributes.$class("form")]),
+      _U.list([A2($Html.form,
+      _U.list([$Html$Attributes.$class("form")
+              ,A2($Html$Events.onSubmit,address,SaveNameInput(player.id))
+              ,$Html$Attributes.action("javascript:void(0);")]),
       _U.list([A2($Html.input,
               _U.list([$Html$Attributes.type$("text")
                       ,$Html$Attributes.placeholder(player.name)
                       ,$Html$Attributes.value(player.nameEdit)
                       ,$Html$Attributes.name("player_name")
                       ,$Html$Attributes.autofocus(true)
-                      ,A2(onInput,address,UpdateNameInput(player.id))
-                      ,A2(onEnter,address,SaveNameInput(player.id))]),
+                      ,A2(onInput,address,UpdateNameInput(player.id))]),
               _U.list([]))
               ,A2($Html.button,
               _U.list([$Html$Attributes.$class("submit")
@@ -12354,7 +12342,7 @@ Elm.MTG.make = function (_elm) {
                              ,update: update
                              ,init: init
                              ,inputs: _U.list([A2($Signal.map,
-                             function (_p5) {
+                             function (_p4) {
                                 return IncrementTimer;
                              },
                              $Time.every($Time.second))])});
@@ -12416,8 +12404,6 @@ Elm.MTG.make = function (_elm) {
                             ,IncreaseEnergy: IncreaseEnergy
                             ,DecreaseEnergy: DecreaseEnergy
                             ,onInput: onInput
-                            ,onEnter: onEnter
-                            ,is13: is13
                             ,getNextColor: getNextColor
                             ,secondsToTimeStr: secondsToTimeStr
                             ,getAlivePlayers: getAlivePlayers

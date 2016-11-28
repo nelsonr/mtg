@@ -76,22 +76,6 @@ onInput address f =
   on "input" targetValue (\v -> Signal.message address (f v))
 
 
-onEnter : Address a -> a -> Attribute
-onEnter address value =
-  on
-    "keydown"
-    (Json.customDecoder keyCode is13)
-    (\_ -> Signal.message address value)
-
-
-is13 : Int -> Result String ()
-is13 code =
-  if code == 13 then
-    Ok ()
-  else
-    Err "not the right key code"
-
-
 getNextColor : String -> String
 getNextColor currentColor =
   let
@@ -437,8 +421,11 @@ nameContainer address player =
   if player.edit then
     div
       [ class "name-container" ]
-      [ div
-          [ class "form" ]
+      [ Html.form
+          [ class "form"
+          , onSubmit address (SaveNameInput player.id)
+          , action "javascript:void(0);"
+          ]
           [ input
               [ type' "text"
               , placeholder player.name
@@ -446,7 +433,6 @@ nameContainer address player =
               , name "player_name"
               , autofocus True
               , onInput address (UpdateNameInput player.id)
-              , onEnter address (SaveNameInput player.id)
               ]
               []
           , button
