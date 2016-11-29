@@ -65,10 +65,11 @@
 
     // Initialize app
     var app = document.getElementById('app');
-    var mtg = Elm.embed(Elm.MTG, app, {getStorage: startingState});
+    var mtg = Elm.Main.embed(app, startingState);
 
     // Update local storage whenever there's a change in the app state
     mtg.ports.setStorage.subscribe(function(state) {
+      console.log(state)
       localStorage.setItem('mtg-state', JSON.stringify(state));
     });
   </script>
