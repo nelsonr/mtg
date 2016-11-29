@@ -69,7 +69,6 @@
 
     // Update local storage whenever there's a change in the app state
     mtg.ports.setStorage.subscribe(function(state) {
-      console.log(state)
       localStorage.setItem('mtg-state', JSON.stringify(state));
     });
   </script>
