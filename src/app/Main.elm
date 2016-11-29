@@ -1,54 +1,17 @@
-module MTG (..) where
+module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode as Json
-import Time
-import Signal exposing (Address)
-import Effects exposing (Effects)
-import StartApp exposing (App)
-
-
--- TYPE DEFINITIONS --
-
-
-type alias Id =
-  Int
-
-
-type alias Player =
-  { id : Id
-  , name : String
-  , color : String
-  , life : Int
-  , edit : Bool
-  , nameEdit : String
-  , wins : Int
-  , energy : Int
-  }
-
-
-type alias Players =
-  List Player
-
-
--- MODEL DEFINITION --
-
-
-type alias Model =
-  { players : Players
-  , activePlayers : Int
-  , currentTime : Int
-  , timeIsRunning : Bool
-  , gameOver : Bool
-  }
+import Time exposing (Time, second)
+import Models exposing (..)
+import Storage exposing (..)
 
 
 -- ACTIONS LIST --
 
 
-type Action
+type Msg
   = NoOp
   | IncrementTimer
   | StartStopTimer
@@ -62,6 +25,7 @@ type Action
   | EnableNameInput Id
   | UpdateNameInput Id String
   | SaveNameInput Id
+  | PlayerWins Id
   | IncreaseWins Id
   | DecreaseWins Id
   | IncreaseEnergy Id
@@ -69,11 +33,6 @@ type Action
 
 
 -- HELPER FUNCTIONS --
-
-
-onInput : Address a -> (String -> a) -> Attribute
-onInput address f =
-  on "input" targetValue (\v -> Signal.message address (f v))
 
 
 getNextColor : String -> String
@@ -174,23 +133,23 @@ initialModel =
 -- UPDATE --
 
 
-update : Action -> Model -> ( Model, Effects Action )
-update action model =
-  case action of
+update : Msg -> Model -> ( Model, Cmd Msg )
+update message model =
+  case message of
     NoOp ->
-      ( model, Effects.none )
+      ( model, Cmd.none )
 
     IncrementTimer ->
       if model.timeIsRunning == True then
         ( { model | currentTime = model.currentTime + 1 }
-        , Effects.none
+        , Cmd.none
         )
       else
-        ( model, Effects.none )
+        ( model, Cmd.none )
 
     StartStopTimer ->
       ( { model | timeIsRunning = not model.timeIsRunning }
-      , Effects.none
+      , Cmd.none
       )
 
     ResetGameOver ->
@@ -198,7 +157,7 @@ update action model =
             | gameOver = False
             , timeIsRunning = True
         }
-      , Effects.none
+      , Cmd.none
       )
 
     ResetGame ->
@@ -208,32 +167,32 @@ update action model =
             , timeIsRunning = False
             , gameOver = False
         }
-      , Effects.none
+      , Cmd.none
       )
 
     ResetWins ->
       ( { model | players = List.map (\player -> { player | wins = 0 }) model.players }
-      , Effects.none
+      , Cmd.none
       )
 
     IncreasePlayers ->
       if model.activePlayers < 5 then
         ( { model | activePlayers = model.activePlayers + 1 }
-        , Effects.none
+        , Cmd.none
         )
       else
         ( model
-        , Effects.none
+        , Cmd.none
         )
 
     DecreasePlayers ->
       if model.activePlayers > 2 then
         ( { model | activePlayers = model.activePlayers - 1 }
-        , Effects.none
+        , Cmd.none
         )
       else
         ( model
-        , Effects.none
+        , Cmd.none
         )
 
     CyclePlayerColor id ->
@@ -245,7 +204,7 @@ update action model =
             player
       in
         ( { model | players = List.map changeColor model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     UpdateLife id life ->
@@ -267,7 +226,7 @@ update action model =
               , timeIsRunning = not gameOver
               , gameOver = gameOver
           }
-        , Effects.none
+        , Cmd.none
         )
 
     UpdateNameInput id val ->
@@ -279,7 +238,7 @@ update action model =
             player
       in
         ( { model | players = List.map setNameEdit model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     EnableNameInput id ->
@@ -291,7 +250,7 @@ update action model =
             player
       in
         ( { model | players = List.map editPlayer model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     SaveNameInput id ->
@@ -303,8 +262,17 @@ update action model =
             player
       in
         ( { model | players = List.map setName model.players }
-        , Effects.none
+        , Cmd.none
         )
+
+    PlayerWins id ->
+      let
+        ( playerWithExtraWin, _ ) =
+          update (IncreaseWins id) model
+        ( newGame, _ ) =
+          update (ResetGame) playerWithExtraWin
+      in
+        ( newGame, Cmd.none )
 
     IncreaseWins id ->
       let
@@ -315,7 +283,7 @@ update action model =
             player
       in
         ( { model | players = List.map addWin model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     DecreaseWins id ->
@@ -327,7 +295,7 @@ update action model =
             player
       in
         ( { model | players = List.map removeWin model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     IncreaseEnergy id ->
@@ -339,7 +307,7 @@ update action model =
             player
       in
         ( { model | players = List.map addEnergy model.players }
-        , Effects.none
+        , Cmd.none
         )
 
     DecreaseEnergy id ->
@@ -351,15 +319,15 @@ update action model =
             player
       in
         ( { model | players = List.map removeEnergy model.players }
-        , Effects.none
+        , Cmd.none
         )
 
 
 -- VIEWS --
 
 
-timerContainer : Address Action -> Model -> Html
-timerContainer address model =
+timerContainer : Model -> Html Msg
+timerContainer model =
   let
     startStopBtnTxt =
       if model.timeIsRunning == True then
@@ -377,66 +345,66 @@ timerContainer address model =
           [ class "timer" ]
           [ text (secondsToTimeStr model.currentTime) ]
       , button
-          [ class "btn-sm", onClick address StartStopTimer ]
+          [ class "btn-sm", onClick StartStopTimer ]
           [ (text startStopBtnTxt) ]
       ]
 
 
-gameOptionsContainer : Address Action -> Model -> Html
-gameOptionsContainer address model =
+gameOptionsContainer : Model -> Html Msg
+gameOptionsContainer model =
   div
     [ class "game-options-container" ]
     [ div
         [ class "game-option option-group" ]
         [ button
-            [ class "option-reset-game", onClick address ResetGame ]
+            [ class "option-reset-game", onClick ResetGame ]
             [ (text "New Game") ]
         , button
-            [ class "option-reset-wins", onClick address ResetWins ]
+            [ class "option-reset-wins", onClick ResetWins ]
             [ (text "Reset Wins") ]
         ]
     , div
         [ class "game-option" ]
-        [ timerContainer address model ]
+        [ timerContainer model ]
     , div
         [ class "game-option option-group" ]
         [ button
             [ class "option"
             , disabled (model.activePlayers == 2)
-            , onClick address DecreasePlayers
+            , onClick DecreasePlayers
             ]
             [ (text "Remove Player") ]
         , button
             [ class "option"
             , disabled (model.activePlayers == 5)
-            , onClick address IncreasePlayers
+            , onClick IncreasePlayers
             ]
             [ (text "Add Player") ]
         ]
     ]
 
 
-nameContainer : Address Action -> Player -> Html
-nameContainer address player =
+nameContainer : Player -> Html Msg
+nameContainer player =
   if player.edit then
     div
       [ class "name-container" ]
       [ Html.form
           [ class "form"
-          , onSubmit address (SaveNameInput player.id)
+          , onSubmit (SaveNameInput player.id)
           , action "javascript:void(0);"
           ]
           [ input
-              [ type' "text"
+              [ type_ "text"
               , placeholder player.name
               , value player.nameEdit
               , name "player_name"
               , autofocus True
-              , onInput address (UpdateNameInput player.id)
+              , onInput (UpdateNameInput player.id)
               ]
               []
           , button
-              [ class "submit", onClick address (SaveNameInput player.id) ]
+              [ class "submit", onClick (SaveNameInput player.id) ]
               [ text "Save" ]
           ]
       ]
@@ -444,22 +412,22 @@ nameContainer address player =
     div
       [ class "name-container" ]
       [ div
-          [ class "name", onClick address (EnableNameInput player.id) ]
+          [ class "name", onClick (EnableNameInput player.id) ]
           [ (text player.name) ]
       ]
 
 
-playerBox : Address Action -> Player -> Html
-playerBox address player =
+playerBox : Player -> Html Msg
+playerBox player =
   div
     [ classList
         [ ( "player " ++ player.color, True )
         , ( "deceased", player.life <= 0 )
         ]
     ]
-    [ nameContainer address player
+    [ nameContainer player
     , div
-        [ class "life-container", onClick address (CyclePlayerColor player.id) ]
+        [ class "life-container", onClick (CyclePlayerColor player.id) ]
         [ div [ class "life" ] [ text (toString player.life) ] ]
     , div
         [ class "counters-container" ]
@@ -467,23 +435,23 @@ playerBox address player =
           [ class "energy-container" ]
           [ button
               [ class "minus-win"
-              , onClick address (DecreaseEnergy player.id)
+              , onClick (DecreaseEnergy player.id)
               , disabled (player.energy < 1)
               ]
               [ (text "-") ]
           , div [ class "energy" ] [ text (toString player.energy) ]
-          , button [ class "plus-win", onClick address (IncreaseEnergy player.id) ] [ (text "+") ]
+          , button [ class "plus-win", onClick (IncreaseEnergy player.id) ] [ (text "+") ]
           ]
         , div
           [ class "wins-container" ]
           [ button
               [ class "minus-win"
-              , onClick address (DecreaseWins player.id)
+              , onClick (DecreaseWins player.id)
               , disabled (player.wins < 1)
               ]
               [ (text "-") ]
           , div [ class "wins" ] [ text (toString player.wins) ]
-          , button [ class "plus-win", onClick address (IncreaseWins player.id) ] [ (text "+") ]
+          , button [ class "plus-win", onClick (IncreaseWins player.id) ] [ (text "+") ]
           ]
         ]
     , div
@@ -491,30 +459,30 @@ playerBox address player =
         [ div
             [ class "options-row" ]
             [ div
-                [ class "option", onClick address (UpdateLife player.id 1) ]
+                [ class "option", onClick (UpdateLife player.id 1) ]
                 [ button [] [ (text "+1") ] ]
             , div
-                [ class "option", onClick address (UpdateLife player.id 5) ]
+                [ class "option", onClick (UpdateLife player.id 5) ]
                 [ button [] [ (text "+5") ] ]
             ]
         , div
             [ class "options-row" ]
             [ div
-                [ class "option", onClick address (UpdateLife player.id -1) ]
+                [ class "option", onClick (UpdateLife player.id -1) ]
                 [ button [] [ (text "-1") ] ]
             , div
-                [ class "option", onClick address (UpdateLife player.id -5) ]
+                [ class "option", onClick (UpdateLife player.id -5) ]
                 [ button [] [ (text "-5") ] ]
             ]
         ]
     ]
 
 
-playersContainer : Address Action -> Players -> Html
-playersContainer address players =
+playersContainer : Players -> Html Msg
+playersContainer players =
   let
     playersList =
-      (List.map (playerBox address) players)
+      (List.map (playerBox) players)
 
     playersCount =
       (List.length players)
@@ -527,8 +495,8 @@ playersContainer address players =
       ]
 
 
-victoryMessageContainer : Address Action -> Player -> Html
-victoryMessageContainer address player =
+victoryMessageContainer : Player -> Html Msg
+victoryMessageContainer player =
   div
     [ class "victory-message-container" ]
     [ h1
@@ -540,33 +508,33 @@ victoryMessageContainer address player =
         [ class "game-option" ]
         [ button
             [ class "option"
-            , onClick address ResetGame
+            , onClick (PlayerWins player.id)
             ]
             [ (text "New Game") ]
         , button
             [ class "option btn-sm"
-            , onClick address ResetGameOver
+            , onClick ResetGameOver
             ]
             [ (text "Undo") ]
         ]
     ]
 
 
-gameOverView : Address Action -> Model -> Html
-gameOverView address model =
+gameOverView : Model -> Html Msg
+gameOverView model =
   let
     alivePlayers =
       getAlivePlayers model.players model.activePlayers
 
     victoryMessageView =
-      List.map (victoryMessageContainer address) alivePlayers
+      List.map (victoryMessageContainer) alivePlayers
   in
     div
       [ class "main" ]
       [ div
           [ class "board shake" ]
-          [ gameOptionsContainer address model
-          , playersContainer address (List.take model.activePlayers model.players)
+          [ gameOptionsContainer model
+          , playersContainer (List.take model.activePlayers model.players)
           ]
       , div
           [ class "victory-container" ]
@@ -574,14 +542,14 @@ gameOverView address model =
       ]
 
 
-defaultView : Address Action -> Model -> Html
-defaultView address model =
+defaultView : Model -> Html Msg
+defaultView model =
   div
     [ class "main" ]
     [ div
         [ class "board" ]
-        [ gameOptionsContainer address model
-        , playersContainer address (List.take model.activePlayers model.players)
+        [ gameOptionsContainer model
+        , playersContainer (List.take model.activePlayers model.players)
         ]
     ]
 
@@ -589,55 +557,59 @@ defaultView address model =
 -- MAIN VIEW --
 
 
-view : Address Action -> Model -> Html
-view address model =
+view : Model -> Html Msg
+view model =
   if model.gameOver then
-    gameOverView address model
+    gameOverView model
   else
-    defaultView address model
+    defaultView model
 
 
 -- INIT --
 
 
-loadModel : Model
-loadModel =
-  Maybe.withDefault initialModel getStorage
+init : Maybe Model -> ( Model, Cmd msg )
+init model =
+  case model of
+    Just model ->
+      ( model, Cmd.none )
+    Nothing ->
+      ( initialModel, Cmd.none )
 
 
-init : ( Model, Effects Action )
-init =
-  ( loadModel, Effects.none )
+-- SUBSCRIPTIONS --
 
 
--- APP CONFIG --
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  if model.timeIsRunning then
+    Time.every second (\_ -> IncrementTimer)
+  else
+    Sub.none
 
 
-app =
-  StartApp.start
-    { view = view
-    , update = update
-    , init = init
-    , inputs = [ Signal.map (\_ -> IncrementTimer) (Time.every Time.second) ]
-    }
+-- UPDATE WITH STORAGE HELPER --
 
 
--- PORTS --
-
-
-{- Input port (from JS) -}
-port getStorage : Maybe Model
-
-
-{- Output port (send to JS) -}
-port setStorage : Signal Model
-port setStorage =
-  app.model
+updateWithStorage : Msg -> Model -> ( Model, Cmd Msg )
+updateWithStorage msg model =
+  let
+    ( newModel, cmds ) =
+      update msg model
+  in
+    ( newModel
+    , Cmd.batch [ setStorage newModel, cmds ]
+    )
 
 
 -- APP INITIALIZATION --
 
 
-main : Signal Html
+main : Program (Maybe Model) Model Msg
 main =
-  app.html
+  Html.programWithFlags
+    { view = view
+    , update = updateWithStorage
+    , init = init
+    , subscriptions = subscriptions
+    }
