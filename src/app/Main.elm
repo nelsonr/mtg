@@ -66,18 +66,25 @@ getNextColor currentColor =
 secondsToTimeStr : Int -> String
 secondsToTimeStr seconds =
   let
-    secs = toFloat(seconds)
-    h = floor(secs / 3600)
-    m = floor((secs - toFloat(h * 3600)) / 60)
-    s = floor(secs - toFloat(h * 3600) - toFloat(m * 60))
+    secs =
+      toFloat (seconds)
+
+    h =
+      floor (secs / 3600)
+
+    m =
+      floor ((secs - toFloat (h * 3600)) / 60)
+
+    s =
+      floor (secs - toFloat (h * 3600) - toFloat (m * 60))
 
     timeToStr t =
       if t < 10 then
-        "0" ++ toString(t)
+        "0" ++ toString (t)
       else
-        toString(t)
+        toString (t)
   in
-    timeToStr(h) ++ ":" ++ timeToStr(m) ++ ":" ++ timeToStr(s)
+    timeToStr (h) ++ ":" ++ timeToStr (m) ++ ":" ++ timeToStr (s)
 
 
 getAlivePlayers : Players -> Int -> Players
@@ -87,7 +94,7 @@ getAlivePlayers playersList activePlayersCount =
       List.take activePlayersCount playersList
   in
     activePlayersList
-    |> List.filter (\p -> p.life > 0)
+      |> List.filter (\p -> p.life > 0)
 
 
 isGameOver : Players -> Int -> Bool
@@ -97,6 +104,7 @@ isGameOver playersList activePlayersCount =
       getAlivePlayers playersList activePlayersCount
   in
     List.length alivePlayers == 1
+
 
 -- INITIAL MODEL --
 
@@ -154,18 +162,18 @@ update message model =
 
     ResetGameOver ->
       ( { model
-            | gameOver = False
-            , timeIsRunning = True
+          | gameOver = False
+          , timeIsRunning = True
         }
       , Cmd.none
       )
 
     ResetGame ->
       ( { model
-            | players = List.map (\player -> { player | life = 20, energy = 0 }) model.players
-            , currentTime = 0
-            , timeIsRunning = False
-            , gameOver = False
+          | players = List.map (\player -> { player | life = 20, energy = 0 }) model.players
+          , currentTime = 0
+          , timeIsRunning = False
+          , gameOver = False
         }
       , Cmd.none
       )
@@ -222,9 +230,9 @@ update message model =
           isGameOver playersList model.activePlayers
       in
         ( { model
-              | players = playersList
-              , timeIsRunning = not gameOver
-              , gameOver = gameOver
+            | players = playersList
+            , timeIsRunning = not gameOver
+            , gameOver = gameOver
           }
         , Cmd.none
         )
@@ -269,6 +277,7 @@ update message model =
       let
         ( playerWithExtraWin, _ ) =
           update (IncreaseWins id) model
+
         ( newGame, _ ) =
           update (ResetGame) playerWithExtraWin
       in
@@ -337,8 +346,8 @@ timerContainer model =
   in
     div
       [ classList
-          [ ("timer-container", True)
-          , ("running", model.timeIsRunning)
+          [ ( "timer-container", True )
+          , ( "running", model.timeIsRunning )
           ]
       ]
       [ div
@@ -432,27 +441,27 @@ playerBox player =
     , div
         [ class "counters-container" ]
         [ div
-          [ class "energy-container" ]
-          [ button
-              [ class "minus-win"
-              , onClick (DecreaseEnergy player.id)
-              , disabled (player.energy < 1)
-              ]
-              [ (text "-") ]
-          , div [ class "energy" ] [ text (toString player.energy) ]
-          , button [ class "plus-win", onClick (IncreaseEnergy player.id) ] [ (text "+") ]
-          ]
+            [ class "energy-container" ]
+            [ button
+                [ class "minus-win"
+                , onClick (DecreaseEnergy player.id)
+                , disabled (player.energy < 1)
+                ]
+                [ (text "-") ]
+            , div [ class "energy" ] [ text (toString player.energy) ]
+            , button [ class "plus-win", onClick (IncreaseEnergy player.id) ] [ (text "+") ]
+            ]
         , div
-          [ class "wins-container" ]
-          [ button
-              [ class "minus-win"
-              , onClick (DecreaseWins player.id)
-              , disabled (player.wins < 1)
-              ]
-              [ (text "-") ]
-          , div [ class "wins" ] [ text (toString player.wins) ]
-          , button [ class "plus-win", onClick (IncreaseWins player.id) ] [ (text "+") ]
-          ]
+            [ class "wins-container" ]
+            [ button
+                [ class "minus-win"
+                , onClick (DecreaseWins player.id)
+                , disabled (player.wins < 1)
+                ]
+                [ (text "-") ]
+            , div [ class "wins" ] [ text (toString player.wins) ]
+            , button [ class "plus-win", onClick (IncreaseWins player.id) ] [ (text "+") ]
+            ]
         ]
     , div
         [ class "options-container" ]
@@ -573,6 +582,7 @@ init model =
   case model of
     Just model ->
       ( model, Cmd.none )
+
     Nothing ->
       ( initialModel, Cmd.none )
 

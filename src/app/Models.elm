@@ -1,6 +1,5 @@
 module Models exposing (..)
 
-
 -- TYPE DEFINITIONS --
 
 
