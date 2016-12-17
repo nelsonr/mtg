@@ -8672,9 +8672,9 @@ var _user$project$Models$Player = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {id: a, name: b, color: c, life: d, edit: e, nameEdit: f, wins: g, energy: h};
 	});
-var _user$project$Models$Model = F5(
-	function (a, b, c, d, e) {
-		return {players: a, activePlayers: b, currentTime: c, timeIsRunning: d, gameOver: e};
+var _user$project$Models$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {players: a, activePlayers: b, currentTime: c, timeIsRunning: d, gameOver: e, showResetWinsConfirmation: f, showNewGameConfirmation: g};
 	});
 
 var _user$project$Storage$getStorage = _elm_lang$core$Native_Platform.incomingPort(
@@ -8694,8 +8694,18 @@ var _user$project$Storage$getStorage = _elm_lang$core$Native_Platform.incomingPo
 									return A2(
 										_elm_lang$core$Json_Decode$andThen,
 										function (gameOver) {
-											return _elm_lang$core$Json_Decode$succeed(
-												{players: players, activePlayers: activePlayers, currentTime: currentTime, timeIsRunning: timeIsRunning, gameOver: gameOver});
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												function (showResetWinsConfirmation) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														function (showNewGameConfirmation) {
+															return _elm_lang$core$Json_Decode$succeed(
+																{players: players, activePlayers: activePlayers, currentTime: currentTime, timeIsRunning: timeIsRunning, gameOver: gameOver, showResetWinsConfirmation: showResetWinsConfirmation, showNewGameConfirmation: showNewGameConfirmation});
+														},
+														A2(_elm_lang$core$Json_Decode$field, 'showNewGameConfirmation', _elm_lang$core$Json_Decode$bool));
+												},
+												A2(_elm_lang$core$Json_Decode$field, 'showResetWinsConfirmation', _elm_lang$core$Json_Decode$bool));
 										},
 										A2(_elm_lang$core$Json_Decode$field, 'gameOver', _elm_lang$core$Json_Decode$bool));
 								},
@@ -8762,7 +8772,9 @@ var _user$project$Storage$setStorage = _elm_lang$core$Native_Platform.outgoingPo
 			activePlayers: v.activePlayers,
 			currentTime: v.currentTime,
 			timeIsRunning: v.timeIsRunning,
-			gameOver: v.gameOver
+			gameOver: v.gameOver,
+			showResetWinsConfirmation: v.showResetWinsConfirmation,
+			showNewGameConfirmation: v.showNewGameConfirmation
 		};
 	});
 
@@ -8795,7 +8807,9 @@ var _user$project$Main$initialModel = {
 	activePlayers: 2,
 	currentTime: 0,
 	timeIsRunning: false,
-	gameOver: false
+	gameOver: false,
+	showResetWinsConfirmation: false,
+	showNewGameConfirmation: false
 };
 var _user$project$Main$init = function (model) {
 	var _p0 = model;
@@ -9432,14 +9446,110 @@ var _user$project$Main$playersContainer = function (players) {
 };
 var _user$project$Main$DecreasePlayers = {ctor: 'DecreasePlayers'};
 var _user$project$Main$IncreasePlayers = {ctor: 'IncreasePlayers'};
+var _user$project$Main$HideResetWinsConfirmation = {ctor: 'HideResetWinsConfirmation'};
+var _user$project$Main$ShowResetWinsConfirmation = {ctor: 'ShowResetWinsConfirmation'};
 var _user$project$Main$ResetWins = {ctor: 'ResetWins'};
+var _user$project$Main$resetWinsConfirmationContainer = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'popup-container', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'show', _1: model.showResetWinsConfirmation},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('popup'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('popup-message'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Reset wins?'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('popup-options game-option'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('option'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$HideResetWinsConfirmation),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Nope'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('option'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ResetWins),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Yes'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Main$HideNewGameConfirmation = {ctor: 'HideNewGameConfirmation'};
+var _user$project$Main$ShowNewGameConfirmation = {ctor: 'ShowNewGameConfirmation'};
 var _user$project$Main$ResetGame = {ctor: 'ResetGame'};
 var _user$project$Main$update = F2(
 	function (message, model) {
 		var _p4 = message;
 		switch (_p4.ctor) {
-			case 'NoOp':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'IncrementTimer':
 				return _elm_lang$core$Native_Utils.eq(model.timeIsRunning, true) ? {
 					ctor: '_Tuple2',
@@ -9465,40 +9575,67 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ResetGame':
+				var players = A2(
+					_elm_lang$core$List$map,
+					function (player) {
+						return _elm_lang$core$Native_Utils.update(
+							player,
+							{life: 20, energy: 0});
+					},
+					model.players);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							players: A2(
-								_elm_lang$core$List$map,
-								function (player) {
-									return _elm_lang$core$Native_Utils.update(
-										player,
-										{life: 20, energy: 0});
-								},
-								model.players),
-							currentTime: 0,
-							timeIsRunning: false,
-							gameOver: false
-						}),
+						{players: players, currentTime: 0, timeIsRunning: false, gameOver: false, showNewGameConfirmation: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ShowNewGameConfirmation':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showNewGameConfirmation: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'HideNewGameConfirmation':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showNewGameConfirmation: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ResetWins':
+				var players = A2(
+					_elm_lang$core$List$map,
+					function (player) {
+						return _elm_lang$core$Native_Utils.update(
+							player,
+							{wins: 0});
+					},
+					model.players);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							players: A2(
-								_elm_lang$core$List$map,
-								function (player) {
-									return _elm_lang$core$Native_Utils.update(
-										player,
-										{wins: 0});
-								},
-								model.players)
-						}),
+						{players: players, showResetWinsConfirmation: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ShowResetWinsConfirmation':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showResetWinsConfirmation: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'HideResetWinsConfirmation':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showResetWinsConfirmation: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'IncreasePlayers':
@@ -9685,6 +9822,100 @@ var _user$project$Main$updateWithStorage = F2(
 				})
 		};
 	});
+var _user$project$Main$newGameConfirmationContainer = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'popup-container', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'show', _1: model.showNewGameConfirmation},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('popup'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('popup-message'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('New Game?'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('popup-options game-option'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('option'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$HideNewGameConfirmation),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Nope'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('option'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ResetGame),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Yes'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$ResetGameOver = {ctor: 'ResetGameOver'};
 var _user$project$Main$victoryMessageContainer = function (player) {
 	return A2(
@@ -9843,7 +10074,7 @@ var _user$project$Main$gameOptionsContainer = function (model) {
 							_0: _elm_lang$html$Html_Attributes$class('option-reset-game'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ResetGame),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ShowNewGameConfirmation),
 								_1: {ctor: '[]'}
 							}
 						},
@@ -9861,7 +10092,7 @@ var _user$project$Main$gameOptionsContainer = function (model) {
 								_0: _elm_lang$html$Html_Attributes$class('option-reset-wins'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ResetWins),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$ShowResetWinsConfirmation),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -10020,7 +10251,15 @@ var _user$project$Main$defaultView = function (model) {
 						_1: {ctor: '[]'}
 					}
 				}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _user$project$Main$resetWinsConfirmationContainer(model),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Main$newGameConfirmationContainer(model),
+					_1: {ctor: '[]'}
+				}
+			}
 		});
 };
 var _user$project$Main$view = function (model) {
@@ -10060,11 +10299,21 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 												function (players) {
 													return A2(
 														_elm_lang$core$Json_Decode$andThen,
-														function (timeIsRunning) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{activePlayers: activePlayers, currentTime: currentTime, gameOver: gameOver, players: players, timeIsRunning: timeIsRunning});
+														function (showNewGameConfirmation) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																function (showResetWinsConfirmation) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		function (timeIsRunning) {
+																			return _elm_lang$core$Json_Decode$succeed(
+																				{activePlayers: activePlayers, currentTime: currentTime, gameOver: gameOver, players: players, showNewGameConfirmation: showNewGameConfirmation, showResetWinsConfirmation: showResetWinsConfirmation, timeIsRunning: timeIsRunning});
+																		},
+																		A2(_elm_lang$core$Json_Decode$field, 'timeIsRunning', _elm_lang$core$Json_Decode$bool));
+																},
+																A2(_elm_lang$core$Json_Decode$field, 'showResetWinsConfirmation', _elm_lang$core$Json_Decode$bool));
 														},
-														A2(_elm_lang$core$Json_Decode$field, 'timeIsRunning', _elm_lang$core$Json_Decode$bool));
+														A2(_elm_lang$core$Json_Decode$field, 'showNewGameConfirmation', _elm_lang$core$Json_Decode$bool));
 												},
 												A2(
 													_elm_lang$core$Json_Decode$field,
@@ -10121,7 +10370,6 @@ var _user$project$Main$main = _elm_lang$html$Html$programWithFlags(
 				_1: {ctor: '[]'}
 			}
 		}));
-var _user$project$Main$NoOp = {ctor: 'NoOp'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

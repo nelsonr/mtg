@@ -337,3 +337,11 @@ main, #app { height: 100%; }
 .victory-message-container h1 { font-size: 6em; -webkit-animation: scale 150ms forwards; animation: scale 150ms forwards; -webkit-animation-delay: 500ms; animation-delay: 500ms; -webkit-transform: scale(0); transform: scale(0); margin: 0; margin-bottom: 0.1em; }
 
 .victory-message-container .game-option { -webkit-animation: fadeInFromTop 700ms ease-out forwards; animation: fadeInFromTop 700ms ease-out forwards; -webkit-animation-delay: 800ms; animation-delay: 800ms; opacity: 0; }
+
+.popup-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: #FFF; text-align: center; display: none; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -ms-flex-align: center; align-items: center; text-transform: uppercase; background-color: rgba(0, 0, 0, 0.5); opacity: 0; -moz-user-select: none; -ms-user-select: none; -webkit-user-select: none; user-select: none; }
+
+.popup-container.show { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-animation: fadeIn 300ms ease-out forwards; animation: fadeIn 300ms ease-out forwards; }
+
+.popup-container .popup-message { font-size: 4em; margin-bottom: 0.5em; }
+
+.popup-container .game-option .option { margin-left: 14px; margin-right: 14px; padding-left: 1.3em; padding-right: 1.3em; }
