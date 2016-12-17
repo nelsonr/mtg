@@ -12,12 +12,15 @@ import Storage exposing (..)
 
 
 type Msg
-  = NoOp
-  | IncrementTimer
+  = IncrementTimer
   | StartStopTimer
   | ResetGameOver
   | ResetGame
+  | ShowNewGameConfirmation
+  | HideNewGameConfirmation
   | ResetWins
+  | ShowResetWinsConfirmation
+  | HideResetWinsConfirmation
   | IncreasePlayers
   | DecreasePlayers
   | CyclePlayerColor Id
@@ -135,6 +138,8 @@ initialModel =
   , currentTime = 0
   , timeIsRunning = False
   , gameOver = False
+  , showResetWinsConfirmation = False
+  , showNewGameConfirmation = False
   }
 
 
@@ -144,9 +149,6 @@ initialModel =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
   case message of
-    NoOp ->
-      ( model, Cmd.none )
-
     IncrementTimer ->
       if model.timeIsRunning == True then
         ( { model | currentTime = model.currentTime + 1 }
@@ -169,17 +171,49 @@ update message model =
       )
 
     ResetGame ->
-      ( { model
-          | players = List.map (\player -> { player | life = 20, energy = 0 }) model.players
-          , currentTime = 0
-          , timeIsRunning = False
-          , gameOver = False
-        }
+      let
+        players =
+          List.map (\player -> { player | life = 20, energy = 0 }) model.players
+      in
+        ( { model
+            | players = players
+            , currentTime = 0
+            , timeIsRunning = False
+            , gameOver = False
+            , showNewGameConfirmation = False
+          }
+        , Cmd.none
+        )
+
+    ShowNewGameConfirmation ->
+      ( { model | showNewGameConfirmation = True }
+      , Cmd.none
+      )
+
+    HideNewGameConfirmation ->
+      ( { model | showNewGameConfirmation = False }
       , Cmd.none
       )
 
     ResetWins ->
-      ( { model | players = List.map (\player -> { player | wins = 0 }) model.players }
+      let
+        players =
+          List.map (\player -> { player | wins = 0 }) model.players
+      in
+        ( { model
+            | players = players
+            , showResetWinsConfirmation = False
+          }
+        , Cmd.none
+        )
+
+    ShowResetWinsConfirmation ->
+      ( { model | showResetWinsConfirmation = True }
+      , Cmd.none
+      )
+
+    HideResetWinsConfirmation ->
+      ( { model | showResetWinsConfirmation = False }
       , Cmd.none
       )
 
@@ -203,10 +237,10 @@ update message model =
         , Cmd.none
         )
 
-    CyclePlayerColor id ->
+    CyclePlayerColor playerId ->
       let
         changeColor player =
-          if player.id == id then
+          if player.id == playerId then
             { player | color = getNextColor player.color }
           else
             player
@@ -215,10 +249,10 @@ update message model =
         , Cmd.none
         )
 
-    UpdateLife id life ->
+    UpdateLife playerId life ->
       let
         setLife player =
-          if player.id == id then
+          if player.id == playerId then
             { player | life = player.life + life }
           else
             player
@@ -237,10 +271,10 @@ update message model =
         , Cmd.none
         )
 
-    UpdateNameInput id val ->
+    UpdateNameInput playerId val ->
       let
         setNameEdit player =
-          if player.id == id then
+          if player.id == playerId then
             { player | nameEdit = val }
           else
             player
@@ -249,10 +283,10 @@ update message model =
         , Cmd.none
         )
 
-    EnableNameInput id ->
+    EnableNameInput playerId ->
       let
         editPlayer player =
-          if player.id == id then
+          if player.id == playerId then
             { player | edit = True }
           else
             player
@@ -261,10 +295,10 @@ update message model =
         , Cmd.none
         )
 
-    SaveNameInput id ->
+    SaveNameInput playerId ->
       let
         setName player =
-          if player.id == id && player.nameEdit /= "" then
+          if player.id == playerId && player.nameEdit /= "" then
             { player | name = player.nameEdit, edit = False }
           else
             player
@@ -273,20 +307,20 @@ update message model =
         , Cmd.none
         )
 
-    PlayerWins id ->
+    PlayerWins playerId ->
       let
         ( playerWithExtraWin, _ ) =
-          update (IncreaseWins id) model
+          update (IncreaseWins playerId) model
 
         ( newGame, _ ) =
           update (ResetGame) playerWithExtraWin
       in
         ( newGame, Cmd.none )
 
-    IncreaseWins id ->
+    IncreaseWins playerId ->
       let
         addWin player =
-          if player.id == id then
+          if player.id == playerId then
             { player | wins = player.wins + 1 }
           else
             player
@@ -295,10 +329,10 @@ update message model =
         , Cmd.none
         )
 
-    DecreaseWins id ->
+    DecreaseWins playerId ->
       let
         removeWin player =
-          if player.id == id && player.wins > 0 then
+          if player.id == playerId && player.wins > 0 then
             { player | wins = player.wins - 1 }
           else
             player
@@ -307,10 +341,10 @@ update message model =
         , Cmd.none
         )
 
-    IncreaseEnergy id ->
+    IncreaseEnergy playerId ->
       let
         addEnergy player =
-          if player.id == id then
+          if player.id == playerId then
             { player | energy = player.energy + 1 }
           else
             player
@@ -319,10 +353,10 @@ update message model =
         , Cmd.none
         )
 
-    DecreaseEnergy id ->
+    DecreaseEnergy playerId ->
       let
         removeEnergy player =
-          if player.id == id && player.energy > 0 then
+          if player.id == playerId && player.energy > 0 then
             { player | energy = player.energy - 1 }
           else
             player
@@ -366,10 +400,10 @@ gameOptionsContainer model =
     [ div
         [ class "game-option option-group" ]
         [ button
-            [ class "option-reset-game", onClick ResetGame ]
+            [ class "option-reset-game", onClick ShowNewGameConfirmation ]
             [ (text "New Game") ]
         , button
-            [ class "option-reset-wins", onClick ResetWins ]
+            [ class "option-reset-wins", onClick ShowResetWinsConfirmation ]
             [ (text "Reset Wins") ]
         ]
     , div
@@ -504,6 +538,66 @@ playersContainer players =
       ]
 
 
+newGameConfirmationContainer : Model -> Html Msg
+newGameConfirmationContainer model =
+  div
+    [ classList
+        [ ( "popup-container", True )
+        , ( "show", model.showNewGameConfirmation )
+        ]
+    ]
+    [ div
+        [ class "popup" ]
+        [ div
+            [ class "popup-message" ]
+            [ text "New Game?" ]
+        , div
+            [ class "popup-options game-option" ]
+            [ button
+                [ class "option"
+                , onClick HideNewGameConfirmation
+                ]
+                [ text "Nope" ]
+            , button
+                [ class "option"
+                , onClick ResetGame
+                ]
+                [ text "Yes" ]
+            ]
+        ]
+    ]
+
+
+resetWinsConfirmationContainer : Model -> Html Msg
+resetWinsConfirmationContainer model =
+  div
+    [ classList
+        [ ( "popup-container", True )
+        , ( "show", model.showResetWinsConfirmation )
+        ]
+    ]
+    [ div
+        [ class "popup" ]
+        [ div
+            [ class "popup-message" ]
+            [ text "Reset wins?" ]
+        , div
+            [ class "popup-options game-option" ]
+            [ button
+                [ class "option"
+                , onClick HideResetWinsConfirmation
+                ]
+                [ text "Nope" ]
+            , button
+                [ class "option"
+                , onClick ResetWins
+                ]
+                [ text "Yes" ]
+            ]
+        ]
+    ]
+
+
 victoryMessageContainer : Player -> Html Msg
 victoryMessageContainer player =
   div
@@ -560,6 +654,8 @@ defaultView model =
         [ gameOptionsContainer model
         , playersContainer (List.take model.activePlayers model.players)
         ]
+    , resetWinsConfirmationContainer model
+    , newGameConfirmationContainer model
     ]
 
 

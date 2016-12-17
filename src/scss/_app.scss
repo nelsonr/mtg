@@ -427,3 +427,39 @@ main, #app {
     opacity: 0;
   }
 }
+
+.popup-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #FFF;
+  text-align: center;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  background-color: rgba(0,0,0,0.5);
+  opacity: 0;
+
+  @include no-text-selection();
+
+  &.show {
+    display: flex;
+    animation: fadeIn 300ms ease-out forwards;
+  }
+
+  .popup-message {
+    font-size: 4em;
+    margin-bottom: 0.5em;
+  }
+
+  .game-option .option {
+    margin-left: 14px;
+    margin-right: 14px;
+    padding-left: 1.3em;
+    padding-right: 1.3em;
+  }
+}

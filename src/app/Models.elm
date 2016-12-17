@@ -32,4 +32,6 @@ type alias Model =
   , currentTime : Int
   , timeIsRunning : Bool
   , gameOver : Bool
+  , showResetWinsConfirmation : Bool
+  , showNewGameConfirmation : Bool
   }
